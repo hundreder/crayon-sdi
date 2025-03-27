@@ -7,11 +7,10 @@ public interface ILoggedInUserAccessor
     LoggedInUser User();
 }
 
-public record LoggedInUser(string Email);
+public record LoggedInUser(string Email, string CustomerId);
 
 public class LoggedInUserAccessor(IHttpContextAccessor httpContextAccessor) : ILoggedInUserAccessor
 {
-
     public LoggedInUser User()
     {
         var httpContext = httpContextAccessor.HttpContext;
@@ -20,6 +19,6 @@ public class LoggedInUserAccessor(IHttpContextAccessor httpContextAccessor) : IL
         var user = httpContext.User;
         string email = user.Claims.Single(c => c.Type == ClaimTypes.Email).Value;
 
-        return new LoggedInUser(email);
+        return new LoggedInUser(email, email);
     }
 }

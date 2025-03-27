@@ -1,5 +1,6 @@
 using Crayon.API;
 using Crayon.API.Configuration;
+using Crayon.API.Endpoints;
 using Crayon.API.Services;
 using Crayon.API.Plumbing;
 
@@ -12,7 +13,8 @@ services
     .AddCustomAuthentication(appSettings)
     .AddScoped<ILoginService, LoginService>()
     .AddHttpContextAccessor()
-    .AddScoped<ILoggedInUserAccessor, LoggedInUserAccessor>();
+    .AddScoped<ILoggedInUserAccessor, LoggedInUserAccessor>()
+    .AddScoped<ICustomerAccountsService, CustomerAccountsService>();
     
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
