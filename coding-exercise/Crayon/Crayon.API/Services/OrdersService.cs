@@ -18,46 +18,29 @@ public class OrdersService(
 
         if (customerAccounts.All(ca => ca.Id != order.AccountId))
             return CreateOrderError.AccountNotFound;
+
+        var softwareExists = await SoftwareExists(order
+                .Items
+                .Select(i => i.SoftwareId)
+                .ToList(),
+            ct);
         
-        var softwareExists = await SoftwareExists(order.Items.Select(i => i.SoftwareId), ct);
         if (!softwareExists)
             return CreateOrderError.SoftwareNotFound;
 
+        //make order trough CCP
+        //if all ok save order and add software to account. It can be done async
+        
+        
         return Order.Create(order);
     }
 
-    private async Task<bool> SoftwareExists(IEnumerable<string> softwareIds, CancellationToken ct)
+    private async Task<bool> SoftwareExists(List<string> softwareIds, CancellationToken ct)
     {
         var softwareList = await softwareCatalogService.GetSoftware(softwareIds, ct);
-        return softwareList.Count() == softwareIds.Count(); //poor man's check
+        return softwareList.Count() == softwareIds.Count; //poor man's check. Ideally list of nonexistent ids should be returned
     }
 }
-
-public record Order(string Id, string AccountId, IEnumerable<OrderItem> Items)
-{
-    public static Order Create(NewOrder newOrder)
-    {
-        string id = Guid.NewGuid().ToString();
-        var items = newOrder.Items.Select(i => OrderItem.Create(i, id)).ToList();
-        
-        return new Order(id, newOrder.AccountId, items);
-    }
-}
-
-public record OrderItem(string Id, string OrderId, string SoftwareId, int LicenseCount, DateTime LicencedUntil)
-{
-    public static OrderItem Create(NewOrderItem newOrderItem, string orderId) => new OrderItem(
-        Guid.NewGuid().ToString(),
-        orderId,
-        newOrderItem.SoftwareId,
-        newOrderItem.LicenseCount,
-        newOrderItem.LicencedUntil);
-
-}
-
-public record NewOrder(string CustomerId, string AccountId, IList<NewOrderItem> Items);
-
-public record NewOrderItem(string SoftwareId, int LicenseCount, DateTime LicencedUntil);
 
 public enum CreateOrderError
 {

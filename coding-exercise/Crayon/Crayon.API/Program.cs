@@ -1,3 +1,4 @@
+using Crayon.API.ApiClients;
 using Crayon.API.Configuration;
 using Crayon.API.Endpoints;
 using Crayon.API.Services;
@@ -11,13 +12,14 @@ services.AddSingleton(appSettings);
 
 services
     .AddCustomAuthentication(appSettings)
-    .AddScoped<ILoginService, LoginService>()
+    .AddScoped<IAuthenticationService, AuthenticationService>()
     .AddHttpContextAccessor()
     .AddScoped<ILoggedInUserAccessor, LoggedInUserAccessor>()
     .AddScoped<ICustomerAccountsService, CustomerAccountsService>()
     .AddScoped<ISoftwareCatalogRepository, SoftwareCatalogRepository>()
     .AddScoped<ISoftwareCatalogService, SoftwareCatalogService>()
-    .AddScoped<IOrdersService, OrdersService>();
+    .AddScoped<IOrdersService, OrdersService>()
+    .AddHttpClient<ICcpApiClient, CcpApiClient>();
 
     
 // Add services to the container.

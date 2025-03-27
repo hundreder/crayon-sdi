@@ -14,7 +14,7 @@ public static class UserEndpoints
         loginGroup
             .MapPost("login", async (
                 [FromBody] LoginRequest request,
-                [FromServices] ILoginService logionService,
+                [FromServices] IAuthenticationService logionService,
                 CancellationToken ct) =>
             {
                 var token = await logionService.Login(request.Email, "password");
