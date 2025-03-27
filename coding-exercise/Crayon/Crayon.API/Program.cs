@@ -1,8 +1,8 @@
-using Crayon.API;
 using Crayon.API.Configuration;
 using Crayon.API.Endpoints;
 using Crayon.API.Services;
 using Crayon.API.Plumbing;
+using Crayon.API.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -14,7 +14,10 @@ services
     .AddScoped<ILoginService, LoginService>()
     .AddHttpContextAccessor()
     .AddScoped<ILoggedInUserAccessor, LoggedInUserAccessor>()
-    .AddScoped<ICustomerAccountsService, CustomerAccountsService>();
+    .AddScoped<ICustomerAccountsService, CustomerAccountsService>()
+    .AddScoped<ISoftwareCatalogRepository, SoftwareCatalogRepository>()
+    .AddScoped<ISoftwareCatalogService, SoftwareCatalogService>();
+
     
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
