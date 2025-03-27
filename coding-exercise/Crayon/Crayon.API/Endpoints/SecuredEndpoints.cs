@@ -5,15 +5,15 @@ using Crayon.API.Models;
 
 namespace Crayon.API.Endpoints;
 
-public static class CustomersEndpoints
+public static class SecuredEndpoints
 {
     public static IEndpointRouteBuilder MapCustomerEndpoints(this IEndpointRouteBuilder builder)
     {
-        var customersGroup = builder.MapGroup("customers")
+        var apiGroup = builder.MapGroup("api/v1")
             .RequireAuthorization()
-            .WithTags("Customers");
+            .WithTags("Secured API");
 
-        customersGroup
+        apiGroup
             .MapGet("accounts", async (
                 [FromServices] ICustomerAccountsService accountsService,
                 [FromServices] ILoggedInUserAccessor loggedInUserAccessor,
@@ -28,7 +28,7 @@ public static class CustomersEndpoints
             .Produces<CustomerAccountsResponse>()
             .ProducesProblem(401);
 
-        customersGroup
+        apiGroup
             .MapPost("accounts/{accountId}/orders", async (
                 [FromRoute] string accountId,
                 [FromBody] NewOrderRequest newOrderRequest,
@@ -58,25 +58,19 @@ public static class CustomersEndpoints
 
                 return createdOrder;
             })
-            .Produces<NewOrderResponse>()
+            .Produces<NewOrderResponse>(201)
             .ProducesProblem(400)
             .RequireAuthorization()
             ;
-
-        builder.MapGet("catalog", async (
-                [FromServices] ISoftwareCatalogService softwareCatalogService,
-                [FromQuery] string? nameLike,
-                CancellationToken ct,
-                [FromQuery] int? skip = 0,
-                [FromQuery] int? take = 10
-            ) =>
-            {
-                var sc = await softwareCatalogService.GetSoftwareCatalog(nameLike, skip, take, ct);
-
-                return SoftwareCatalogResponse.Create(sc);
-            })
-            .Produces<SoftwareCatalog>()
-            .ProducesProblem(400);
+        
+        apiGroup
+            .MapGet("user", (
+                    [FromServices] ILoggedInUserAccessor loggedInUserAccessor,
+                    HttpContext context,
+                    CancellationToken ct) =>
+                loggedInUserAccessor.User())
+            .Produces<LoggedInUserResponse>()
+            .ProducesProblem(401);
 
         return builder;
     }

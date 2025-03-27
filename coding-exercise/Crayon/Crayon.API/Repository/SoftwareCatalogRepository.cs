@@ -1,7 +1,5 @@
 using Crayon.API.ApiClients;
 using Crayon.API.Models;
-using LanguageExt;
-using LanguageExt.SomeHelp;
 
 namespace Crayon.API.Repository;
 
