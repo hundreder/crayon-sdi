@@ -1,3 +1,5 @@
+using Crayon.API.Models;
+
 namespace Crayon.API.Services;
 
 public interface ICustomerAccountsService
@@ -13,5 +15,3 @@ public class CustomerAccountsService : ICustomerAccountsService
         new CustomerAccount("2", "Account 2", customerId)
     ];
 }
-
-public record CustomerAccount(string Id, string Name, string CustomerId);

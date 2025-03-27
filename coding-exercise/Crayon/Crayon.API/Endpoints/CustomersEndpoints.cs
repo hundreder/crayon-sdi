@@ -28,6 +28,41 @@ public static class CustomersEndpoints
             .Produces<CustomerAccountsResponse>()
             .ProducesProblem(401);
 
+        customersGroup
+            .MapPost("accounts/{accountId}/orders", async (
+                [FromRoute] string accountId,
+                [FromBody] NewOrderRequest newOrderRequest,
+                [FromServices] IOrdersService ordersService,
+                [FromServices] ILoggedInUserAccessor loggedInUserAccessor,
+                CancellationToken ct
+            ) =>
+            {
+                var customerId = loggedInUserAccessor.User().CustomerId;
+                var items = newOrderRequest
+                    .ItemsToOrder
+                    .Select(i => new NewOrderItem(i.SoftwareId, i.LicenseCount, i.LicencedUntil))
+                    .ToList();
+
+                var newOrder = new NewOrder(customerId, accountId, items);
+                var createdOrder = 
+                    (await ordersService.CreateOrder(newOrder, ct))
+                    .Match(
+                        order => Results.Created($"accounts/{accountId}/orders/{order.Id}", new NewOrderResponse(order.Id)),
+                        error=> Results.Problem(new ProblemDetails()
+                        {
+                            Title = error.ToString(),
+                            Detail = "Failed to create order.",
+                            Status = StatusCodes.Status400BadRequest
+                        })
+                    );
+
+                return createdOrder;
+            })
+            .Produces<NewOrderResponse>()
+            .ProducesProblem(400)
+            .RequireAuthorization()
+            ;
+
         builder.MapGet("catalog", async (
                 [FromServices] ISoftwareCatalogService softwareCatalogService,
                 [FromQuery] string? nameLike,

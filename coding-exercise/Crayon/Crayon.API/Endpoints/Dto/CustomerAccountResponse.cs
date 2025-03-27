@@ -1,3 +1,4 @@
+using Crayon.API.Models;
 using Crayon.API.Services;
 
 namespace Crayon.API.Endpoints.Dto;

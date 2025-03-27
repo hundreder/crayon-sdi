@@ -30,7 +30,7 @@ public static class UserEndpoints
                     CancellationToken ct) =>
                 loggedInUserAccessor.User())
             .RequireAuthorization()
-            .Produces<LoggedInUser>()
+            .Produces<LoggedInUserResponse>()
             .ProducesProblem(401);
 
         return builder;

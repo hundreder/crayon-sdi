@@ -16,7 +16,8 @@ services
     .AddScoped<ILoggedInUserAccessor, LoggedInUserAccessor>()
     .AddScoped<ICustomerAccountsService, CustomerAccountsService>()
     .AddScoped<ISoftwareCatalogRepository, SoftwareCatalogRepository>()
-    .AddScoped<ISoftwareCatalogService, SoftwareCatalogService>();
+    .AddScoped<ISoftwareCatalogService, SoftwareCatalogService>()
+    .AddScoped<IOrdersService, OrdersService>();
 
     
 // Add services to the container.
