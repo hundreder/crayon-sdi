@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Crayon.API;
 
-public static class Endpoints   
+public static class Endpoints
 {
     public static void MapEndpoints(this IEndpointRouteBuilder app)
     {
@@ -24,37 +24,43 @@ public static class Endpoints
                 return forecast;
             })
             .WithName("GetWeatherForecast");
-        
-        
+
+
         // ------------------------------------------------------------------------------------------------
-        
-        
-        var loginGroup = app.MapGroup("Login")
-            .WithTags("Login");
+
+
+        var loginGroup = app.MapGroup("user")
+            .WithTags("User");
 
         loginGroup
-            .MapPost("", async (
+            .MapPost("login", async (
                 [FromBody] LoginRequest request,
                 [FromServices] ILoginService logionService,
-                HttpContext context,
                 CancellationToken ct) =>
             {
-                return await logionService.Login(request.Email, "password");
-
+                var token = await logionService.Login(request.Email, "password");
+                return new LoginResponse(token);
             })
-            //.WithValidationOf<ScheduleSlotsRequest>()
             .Produces<LoginResponse>()
             .ProducesProblem(400);
+
+        loginGroup
+            .MapGet("", (
+                    [FromServices] ILoggedInUserAccessor loggedInUserAccessor,
+                    HttpContext context,
+                    CancellationToken ct) =>
+                loggedInUserAccessor.User())
+            .RequireAuthorization()
+            .Produces<LoggedInUser>()
+            .ProducesProblem(401);
     }
 }
 
 public record LoginRequest(string Email);
-public record LoginResponse(string Token);
 
+public record LoginResponse(string Token);
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
-
-
