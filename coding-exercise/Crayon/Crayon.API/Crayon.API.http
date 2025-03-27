@@ -1,0 +1,6 @@
+
+
+GET {{Crayon.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

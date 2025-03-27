@@ -401,3 +401,6 @@ FodyWeavers.xsd
 
 # MasOS
 .DS_Store
+
+#jetbrains
+.idea/
