@@ -1,0 +1,248 @@
+databaseChangeLog:
+  - changeSet:
+      id: "1"
+      author: "srdjan.majstorovic"
+      changes:
+        - sql: "Create SCHEMA Crayon;"
+      rollback:
+        - sql: "DROP SCHEMA Crayon CASCADE;"
+
+  - changeSet:
+      id: "2"
+      author: "srdjan.majstorovic"
+      changes:
+        - createTable:
+            schemaName: Crayon
+            tableName: Customer
+            columns:
+              - column:
+                  name: Id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: Name
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+      rollback:
+        - sql: "DROP TABLE Crayon.Customer"
+
+  - changeSet:
+      id: "3"
+      author: "srdjan.majstorovic"
+      changes:
+        - createTable:
+            schemaName: Crayon
+            tableName: "User"
+            columns:
+              - column:
+                  name: Id
+                  type: VARCHAR(50)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: Email
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CustomerId
+                  type: INT
+            tableConstraints:
+              - foreignKeyConstraint:
+                  constraintName: FK_Customer
+                  baseColumnNames: CustomerId
+                  referencedTableSchemaName: Crayon
+                  referencedTableName: Customer
+                  referencedColumnNames: Id
+      rollback:
+        - sql: "DROP TABLE Crayon.\"User\""
+
+  - changeSet:
+      id: "4"
+      author: "srdjan.majstorovic"
+      changes:
+        - createTable:
+            schemaName: Crayon
+            tableName: Account
+            columns:
+              - column:
+                  name: Id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: CustomerId
+                  type: INT
+                  constraints:
+                    nullable: false
+            tableConstraints:
+              - foreignKeyConstraint:
+                  constraintName: FK_Customer
+                  baseColumnNames: CustomerId
+                  referencedTableSchemaName: Crayon
+                  referencedTableName: Customer
+                  referencedColumnNames: Id
+      rollback:
+        - sql: "DROP TABLE Crayon.Account"
+
+  - changeSet:
+      id: "5"
+      author: "srdjan.majstorovic"
+      changes:
+        - createTable:
+            schemaName: Crayon
+            tableName: "Order"
+            columns:
+              - column:
+                  name: Id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: AccountId
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: Status
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: FailureReason
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CreatedAt
+                  type: TIMESTAMPTZ
+              - column:
+                  name: UpdatedAt
+                  type: TIMESTAMPTZ
+            tableConstraints:
+              - foreignKeyConstraint:
+                  constraintName: FK_Account
+                  baseColumnNames: AccountId
+                  referencedTableSchemaName: Crayon
+                  referencedTableName: Account
+                  referencedColumnNames: Id
+      rollback:
+        - sql: "DROP TABLE Crayon.\"Order\""
+
+  - changeSet:
+      id: "6"
+      author: "srdjan.majstorovic"
+      changes:
+        - createTable:
+            schemaName: Crayon
+            tableName: OrderItem
+            columns:
+              - column:
+                  name: Id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: OrderId
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SoftwareId
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: LicenceCount
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: LicencedUntil
+                  type: TIMESTAMPTZ
+            tableConstraints:
+              - foreignKeyConstraint:
+                  constraintName: FK_Order
+                  baseColumnNames: OrderId
+                  referencedTableSchemaName: Crayon
+                  referencedTableName: "Order"
+                  referencedColumnNames: Id
+      rollback:
+        - sql: "DROP TABLE Crayon.OrderItem"
+
+  - changeSet:
+      id: "7"
+      author: "srdjan.majstorovic"
+      changes:
+        - createTable:
+            schemaName: Crayon
+            tableName: Subscription
+            columns:
+              - column:
+                  name: Id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: SoftwareName
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: Status
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CreatedAt
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+      rollback:
+        - sql: "DROP TABLE Crayon.Subscription"
+
+  - changeSet:
+      id: "8"
+      author: "srdjan.majstorovic"
+      changes:
+        - createTable:
+            schemaName: Crayon
+            tableName: Licence
+            columns:
+              - column:
+                  name: Id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: SubscriptionId
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ValidTo
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+              - column:
+                  name: LicenceKey
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+      rollback:
+        - sql: "DROP TABLE Crayon.Licence"

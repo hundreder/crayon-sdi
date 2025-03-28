@@ -2,47 +2,35 @@
 
 --changeset srdjan.majstorovic:0
 CREATE SCHEMA Crayon;
---rollback Drop schema Crayon cascade;
 
 --changeset srdjan.majstorovic:1
-
-create table Crayon.User (
-    Id varchar(50) primary key not null,
-    Email varchar(50) not null,
-    CustomerId int
-)
-
---rollback DROP TABLE  Crayon.User;
-
-
---changeset srdjan.majstorovic:2
 create table  Crayon.Customer (
     Id int generated always as identity primary key not null,
     Name varchar(50) not null
 )
 
---rollback DROP TABLE  Crayon.Customer; 
+--changeset srdjan.majstorovic:2
 
---changeset srdjan.majstorovic:3
-alter table Crayon.User 
-   ADD CONSTRAINT FK_Customer 
-   FOREIGN KEY (CustomerId) 
-   REFERENCES Crayon.Customer (Id)
+create table Crayon.User (
+    Id int generated always as identity primary key not null,
+    Email varchar(50) not null,
+    Name varchar(50) not null,
+    CustomerId int,
 
---rollback ALTER TABLE IF EXISTS crayon.user DROP CONSTRAINT IF EXISTS fk_customer;
-
+    CONSTRAINT FK_Customer 
+    FOREIGN KEY (CustomerId) 
+    REFERENCES Crayon.Customer (Id)
+)
 
 --changeset srdjan.majstorovic:5
 create table  Crayon.Account (
     Id int generated always as identity primary key not null,
+    Name varchar(50) not null, 
     CustomerId int not null,
 
     CONSTRAINT FK_Customer
       FOREIGN KEY (CustomerId) REFERENCES Crayon.Customer (Id)
 )
-
---rollback DROP TABLE  Crayon.Account;
-
 
 --changeset srdjan.majstorovic:6
 create table  Crayon.Order (
@@ -58,9 +46,6 @@ create table  Crayon.Order (
 
 )
 
---rollback DROP TABLE  Crayon.Order;
-
-
 --changeset srdjan.majstorovic:7
 create table  Crayon.OrderItem (
     Id int generated always as identity primary key not null,
@@ -73,9 +58,6 @@ create table  Crayon.OrderItem (
         FOREIGN KEY (OrderId) REFERENCES Crayon.Order (Id)
 )
 
---rollback DROP TABLE  Crayon.OrderItem;
-
-
 --changeset srdjan.majstorovic:8
 create table  Crayon.Subscription(
     Id int generated always as identity primary key not null,
@@ -83,9 +65,6 @@ create table  Crayon.Subscription(
     Status varchar(50) not null,
     CreatedAt timestamptz not null
 )
-
---rollback DROP TABLE  Crayon.Subscription;
-
 
 --changeset srdjan.majstorovic:9
 create table  Crayon.Licence(
@@ -95,5 +74,27 @@ create table  Crayon.Licence(
     LicenceKey varchar(50) not null
 )
 
+--changeset srdjan.majstorovic:10
+INSERT INTO Crayon.Customer (Name) VALUES ('Foo Co.');
+INSERT INTO Crayon.Customer (Name) VALUES ('Bar Co.');
+INSERT INTO Crayon.Customer (Name) VALUES ('Baz Ltd.');
 
---rollback DROP TABLE  Crayon.Licence;
+
+INSERT INTO Crayon.User (Email, Name, CustomerId) 
+  VALUES ('foouser@test.com', 'Mr Foo User', 1);
+INSERT INTO Crayon.User (Email, Name, CustomerId) 
+  VALUES ('basuser@test.com', 'Mrs Bar User', 2);
+INSERT INTO Crayon.User (Email, Name, CustomerId) 
+  VALUES ('bazuser@test.com', 'Mrs Baz User', 3);
+ 
+INSERT INTO Crayon.Account (Name, CustomerId) VALUES ('Microsoft account', 1);
+INSERT INTO Crayon.Account (Name, CustomerId) VALUES ('Google account', 1);
+INSERT INTO Crayon.Account (Name, CustomerId) VALUES ('Amazon account', 2);
+INSERT INTO Crayon.Account (Name, CustomerId) VALUES ('Google account', 2);
+INSERT INTO Crayon.Account (Name, CustomerId) VALUES ('Adobe account', 3);
+INSERT INTO Crayon.Account (Name, CustomerId) VALUES ('Azure account', 3);
+
+--rollback empty
+-- delete from Crayon.Account where 1=1
+-- delete from Crayon.User where 1=1
+-- delete from Crayon.Customer where 1=1
