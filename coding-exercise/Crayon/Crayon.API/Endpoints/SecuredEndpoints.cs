@@ -1,3 +1,4 @@
+using System.Net;
 using Crayon.API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Crayon.API.Endpoints.Dto;
@@ -7,11 +8,21 @@ namespace Crayon.API.Endpoints;
 
 public static class SecuredEndpoints
 {
-    public static IEndpointRouteBuilder MapCustomerEndpoints(this IEndpointRouteBuilder builder)
+    public static IEndpointRouteBuilder MapSecureEndpoints(this IEndpointRouteBuilder builder)
     {
         var apiGroup = builder.MapGroup("api/v1")
             .RequireAuthorization()
-            .WithTags("Secured API");
+            .WithTags("Secured API")
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status500InternalServerError);
+
+        apiGroup
+            .MapGet("user", (
+                    [FromServices] ILoggedInUserAccessor loggedInUserAccessor,
+                    HttpContext context,
+                    CancellationToken ct) =>
+                loggedInUserAccessor.User())
+            .Produces<LoggedInUserResponse>();
 
         apiGroup
             .MapGet("accounts", async (
@@ -25,8 +36,7 @@ public static class SecuredEndpoints
 
                 return response;
             })
-            .Produces<CustomerAccountsResponse>()
-            .ProducesProblem(401);
+            .Produces<CustomerAccountsResponse>();
 
         apiGroup
             .MapPost("accounts/{accountId}/orders", async (
@@ -52,25 +62,18 @@ public static class SecuredEndpoints
                         {
                             Title = error.ToString(),
                             Detail = "Failed to create order.",
-                            Status = StatusCodes.Status400BadRequest
+                            Status = error == CreateOrderError.SubmittingOrderToExternalProviderFailed
+                                ? StatusCodes.Status502BadGateway
+                                : StatusCodes.Status400BadRequest,
                         })
                     );
 
                 return createdOrder;
             })
             .Produces<NewOrderResponse>(201)
-            .ProducesProblem(400)
-            .RequireAuthorization()
-            ;
+            .ProducesProblem(400);
         
-        apiGroup
-            .MapGet("user", (
-                    [FromServices] ILoggedInUserAccessor loggedInUserAccessor,
-                    HttpContext context,
-                    CancellationToken ct) =>
-                loggedInUserAccessor.User())
-            .Produces<LoggedInUserResponse>()
-            .ProducesProblem(401);
+       
 
         return builder;
     }

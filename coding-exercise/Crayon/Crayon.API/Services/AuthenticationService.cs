@@ -18,11 +18,6 @@ public class AuthenticationService(AppSettings settings) : IAuthenticationServic
         return GenerateJwtToken(email);
     }
 
-    public Task<string> User()
-    {
-        throw new NotImplementedException();
-    }
-
     private string GenerateJwtToken(string email)
     {
         var secretKey = settings.JwtSecretKey;

@@ -6,7 +6,7 @@ namespace Crayon.API.Endpoints;
 
 public static class PublicEndpoints
 {
-    public static IEndpointRouteBuilder MapUserEndpoints(this IEndpointRouteBuilder builder)
+    public static IEndpointRouteBuilder MapPublicEndpoints(this IEndpointRouteBuilder builder)
     {
         var publicApiGroup = builder.MapGroup("api/vi")
             .WithTags("PublicApi");
@@ -31,6 +31,8 @@ public static class PublicEndpoints
                 [FromQuery] int? take = 10
             ) =>
             {
+                //basic input validation should be added
+                
                 var sc = await softwareCatalogService.GetSoftwareCatalog(nameLike, skip, take, ct);
 
                 return SoftwareCatalogResponse.Create(sc);
