@@ -1,100 +1,100 @@
 --liquibase formatted sql
 
 --changeset srdjan.majstorovic:1
-CREATE SCHEMA Crayon;
+CREATE SCHEMA crayon;
 
 --changeset srdjan.majstorovic:2
-create table  Crayon.Customer (
-    Id int generated always as identity primary key not null,
-    Name varchar(50) not null
+create table  crayon.customer (
+    id int generated always as identity primary key not null,
+    name varchar(50) not null
 )
 
 --changeset srdjan.majstorovic:3
 
-create table Crayon.User (
-    Id int generated always as identity primary key not null,
-    Email varchar(50) not null,
-    Name varchar(50) not null,
-    CustomerId int,
+create table crayon.user (
+    id int generated always as identity primary key not null,
+    email varchar(50) not null,
+    name varchar(50) not null,
+    customer_id int,
 
-    CONSTRAINT FK_Customer 
-    FOREIGN KEY (CustomerId) 
-    REFERENCES Crayon.Customer (Id)
+    CONSTRAINT FK_customer 
+    FOREIGN KEY (customer_id) 
+    REFERENCES crayon.customer (id)
 )
 
 --changeset srdjan.majstorovic:4
-create table  Crayon.Account (
-    Id int generated always as identity primary key not null,
-    Name varchar(50) not null, 
-    CustomerId int not null,
+create table  crayon.account (
+    id int generated always as identity primary key not null,
+    name varchar(50) not null, 
+    customer_id int not null,
 
-    CONSTRAINT FK_Customer
-      FOREIGN KEY (CustomerId) REFERENCES Crayon.Customer (Id)
+    CONSTRAINT FK_customer
+      FOREIGN KEY (customer_id) REFERENCES crayon.customer (id)
 )
 
 --changeset srdjan.majstorovic:5
-create table  Crayon.Order (
-    Id int generated always as identity primary key not null,
-    AccountId int not null,
-    Status varchar(50) not null,
-    FailureReason varchar(50) not null,
-    CreatedAt timestamptz,
-    UpdatedAt timestamptz,
+create table  crayon.Order (
+    id int generated always as identity primary key not null,
+    accountid int not null,
+    status varchar(50) not null,
+    failure_reason varchar(50) not null,
+    created_at timestamptz,
+    updated_at timestamptz,
     
-    CONSTRAINT FK_Account
-        FOREIGN KEY (AccountId) REFERENCES Crayon.Account (Id)
+    CONSTRAINT FK_account
+        FOREIGN KEY (accountid) REFERENCES crayon.account (id)
 
 )
 
 --changeset srdjan.majstorovic:6
-create table  Crayon.OrderItem (
-    Id int generated always as identity primary key not null,
-    OrderId int not null,
-    SoftwareId int not null,
-    LicenceCount int not null,
-    LicencedUntil timestamptz,
+create table  crayon.OrderItem (
+    id int generated always as identity primary key not null,
+    order_id int not null,
+    software_id int not null,
+    licence_count int not null,
+    licence_valid_to timestamptz,
     
     CONSTRAINT FK_Order
-        FOREIGN KEY (OrderId) REFERENCES Crayon.Order (Id)
+        FOREIGN KEY (order_id) REFERENCES crayon.Order (id)
 )
 
 --changeset srdjan.majstorovic:7
-create table  Crayon.Subscription(
-    Id int generated always as identity primary key not null,
-    SoftwareName varchar(50) not null,
-    Status varchar(50) not null,
-    CreatedAt timestamptz not null
+create table  crayon.Subscription(
+    id int generated always as identity primary key not null,
+    software_name varchar(50) not null,
+    status varchar(50) not null,
+    created_at timestamptz not null
 )
 
 --changeset srdjan.majstorovic:8
-create table  Crayon.Licence(
-    Id int generated always as identity primary key not null,
-    SubscriptionId int not null,
-    ValidTo timestamptz not null,
-    LicenceKey varchar(50) not null
+create table  crayon.Licence(
+    id int generated always as identity primary key not null,
+    subscription_id int not null,
+    valid_to timestamptz not null,
+    licence_key varchar(50) not null
 )
 
 --changeset srdjan.majstorovic:9
-INSERT INTO Crayon.Customer (Name) VALUES ('Foo Co.');
-INSERT INTO Crayon.Customer (Name) VALUES ('Bar Co.');
-INSERT INTO Crayon.Customer (Name) VALUES ('Baz Ltd.');
+INSERT INTO crayon.customer (name) VALUES ('Foo Co.');
+INSERT INTO crayon.customer (name) VALUES ('Bar Co.');
+INSERT INTO crayon.customer (name) VALUES ('Baz Ltd.');
 
 
-INSERT INTO Crayon.User (Email, Name, CustomerId) 
-  VALUES ('foouser@test.com', 'Mr Foo User', 1);
-INSERT INTO Crayon.User (Email, Name, CustomerId) 
-  VALUES ('basuser@test.com', 'Mrs Bar User', 2);
-INSERT INTO Crayon.User (Email, Name, CustomerId) 
-  VALUES ('bazuser@test.com', 'Mrs Baz User', 3);
+INSERT INTO crayon.user (Email, name, customer_id) 
+  VALUES ('foouser@test.com', 'Mr Foo user', 1);
+INSERT INTO crayon.user (Email, name, customer_id) 
+  VALUES ('basuser@test.com', 'Mrs Bar user', 2);
+INSERT INTO crayon.user (Email, name, customer_id) 
+  VALUES ('bazuser@test.com', 'Mrs Baz user', 3);
  
-INSERT INTO Crayon.Account (Name, CustomerId) VALUES ('Microsoft account', 1);
-INSERT INTO Crayon.Account (Name, CustomerId) VALUES ('Google account', 1);
-INSERT INTO Crayon.Account (Name, CustomerId) VALUES ('Amazon account', 2);
-INSERT INTO Crayon.Account (Name, CustomerId) VALUES ('Google account', 2);
-INSERT INTO Crayon.Account (Name, CustomerId) VALUES ('Adobe account', 3);
-INSERT INTO Crayon.Account (Name, CustomerId) VALUES ('Azure account', 3);
+INSERT INTO crayon.account (name, customer_id) VALUES ('Microsoft account', 1);
+INSERT INTO crayon.account (name, customer_id) VALUES ('Google account', 1);
+INSERT INTO crayon.account (name, customer_id) VALUES ('Amazon account', 2);
+INSERT INTO crayon.account (name, customer_id) VALUES ('Google account', 2);
+INSERT INTO crayon.account (name, customer_id) VALUES ('Adobe account', 3);
+INSERT INTO crayon.account (name, customer_id) VALUES ('Azure account', 3);
 
 --rollback empty
--- delete from Crayon.Account where 1=1
--- delete from Crayon.User where 1=1
--- delete from Crayon.Customer where 1=1
+-- delete from crayon.account where 1=1
+-- delete from crayon.user where 1=1
+-- delete from crayon.customer where 1=1

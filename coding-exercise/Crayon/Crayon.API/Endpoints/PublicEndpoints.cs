@@ -17,8 +17,17 @@ public static class PublicEndpoints
                 [FromServices] IAuthenticationService loginService,
                 CancellationToken ct) =>
             {
-                var token = await loginService.Login(request.Email, request.Password);
-                return new LoginResponse(token);
+                var token = (await loginService.Login(request.Email, request.Password))
+                    .Match(
+                        jwt => Results.Ok(new LoginResponse(jwt)),
+                        _ => Results.Problem(new ProblemDetails
+                        {
+                            Title = "InvalidCredentials", // we dont want to return the real reason, but we should log that
+                            Detail = "Login failed.",
+                            Status = StatusCodes.Status400BadRequest,
+                        }));
+
+                return token;
             })
             .Produces<LoginResponse>()
             .ProducesProblem(400);
@@ -32,7 +41,7 @@ public static class PublicEndpoints
             ) =>
             {
                 //basic input validation should be added
-                
+
                 var sc = await softwareCatalogService.GetSoftwareCatalog(nameLike, skip, take, ct);
 
                 return SoftwareCatalogResponse.Create(sc);

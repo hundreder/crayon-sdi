@@ -27,7 +27,7 @@ Swaggeer http://localhost:5072/swagger/index.html
 # PostgresSQL database setup
 Run the following docker command to spin up new instance of postgres db
 
-```
+```docker
 docker run --name crayon-postgres \
     -e POSTGRES_USER=crayon \
     -e POSTGRES_PASSWORD=somepassword \
@@ -42,3 +42,21 @@ To create database schema run
 Usefull liquibase commands
 -   ```liquibase updateTestingRollback``` - run all changesets and rolls them back
 -   ```liquibase validate``` - validates changesets
+
+
+DB is seeded with several users, customers and accounts.
+Emails:
+
+
+# Login
+
+
+
+# Troubleshooting
+If liwuibase partialy suceedes, reset db to initial state
+```SQL
+DELETE FROM public.databasechangelog	
+WHERE 1=1;
+
+Drop schema crayon cascade;
+```

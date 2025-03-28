@@ -2,31 +2,53 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Crayon.API.Configuration;
+using Crayon.Domain.Models;
+using Crayon.Repository;
 using Microsoft.IdentityModel.Tokens;
+using LanguageExt;
 
 namespace Crayon.API.Services;
 
 public interface IAuthenticationService
 {
-    Task<string> Login(string email, string password);
+    Task<Either<LoginError, string>> Login(string email, string password);
+    Task<User> GetLoggedInUser();
 }
 
-public class AuthenticationService(AppSettings settings) : IAuthenticationService
+public class AuthenticationService(AppSettings settings, CrayonDbContext dbContext) : IAuthenticationService
 {
-    public async Task<string> Login(string email, string password)
+    public async Task<Either<LoginError, string>> Login(string email, string password)
     {
-        return GenerateJwtToken(email);
+        if (!ValidateCredentials(email, password))
+            return LoginError.InvalidCredentials;
+
+        var user = dbContext.Users.SingleOrDefault(u => u.Email == email);
+        
+        var jwt = Prelude.Optional(user)
+            .ToEither(LoginError.UserNotFound)
+            .Map(GenerateJwtToken);
+
+        return jwt;
     }
 
-    private string GenerateJwtToken(string email)
+    public Task<User> GetLoggedInUser()
+    {
+        throw new NotImplementedException();
+    }
+
+    private bool ValidateCredentials(string email, string password)
+        => password == "123456";
+    
+    
+    private string GenerateJwtToken(User user)
     {
         var secretKey = settings.JwtSecretKey;
         var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
 
         var claims = new[]
         {
-            new Claim(ClaimTypes.Name, email),
-            new Claim(ClaimTypes.Email, email),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(ClaimTypes.Role, "User")
         };
 
@@ -39,7 +61,13 @@ public class AuthenticationService(AppSettings settings) : IAuthenticationServic
 
         var tokenHandler = new JwtSecurityTokenHandler();
         var securityToken = tokenHandler.CreateToken(tokenDescriptor);
-        
+
         return tokenHandler.WriteToken(securityToken);
     }
+}
+
+public enum LoginError
+{
+    InvalidCredentials,
+    UserNotFound
 }
