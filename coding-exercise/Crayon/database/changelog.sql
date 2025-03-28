@@ -1,15 +1,15 @@
 --liquibase formatted sql
 
---changeset srdjan.majstorovic:0
+--changeset srdjan.majstorovic:1
 CREATE SCHEMA Crayon;
 
---changeset srdjan.majstorovic:1
+--changeset srdjan.majstorovic:2
 create table  Crayon.Customer (
     Id int generated always as identity primary key not null,
     Name varchar(50) not null
 )
 
---changeset srdjan.majstorovic:2
+--changeset srdjan.majstorovic:3
 
 create table Crayon.User (
     Id int generated always as identity primary key not null,
@@ -22,7 +22,7 @@ create table Crayon.User (
     REFERENCES Crayon.Customer (Id)
 )
 
---changeset srdjan.majstorovic:5
+--changeset srdjan.majstorovic:4
 create table  Crayon.Account (
     Id int generated always as identity primary key not null,
     Name varchar(50) not null, 
@@ -32,7 +32,7 @@ create table  Crayon.Account (
       FOREIGN KEY (CustomerId) REFERENCES Crayon.Customer (Id)
 )
 
---changeset srdjan.majstorovic:6
+--changeset srdjan.majstorovic:5
 create table  Crayon.Order (
     Id int generated always as identity primary key not null,
     AccountId int not null,
@@ -46,7 +46,7 @@ create table  Crayon.Order (
 
 )
 
---changeset srdjan.majstorovic:7
+--changeset srdjan.majstorovic:6
 create table  Crayon.OrderItem (
     Id int generated always as identity primary key not null,
     OrderId int not null,
@@ -58,7 +58,7 @@ create table  Crayon.OrderItem (
         FOREIGN KEY (OrderId) REFERENCES Crayon.Order (Id)
 )
 
---changeset srdjan.majstorovic:8
+--changeset srdjan.majstorovic:7
 create table  Crayon.Subscription(
     Id int generated always as identity primary key not null,
     SoftwareName varchar(50) not null,
@@ -66,7 +66,7 @@ create table  Crayon.Subscription(
     CreatedAt timestamptz not null
 )
 
---changeset srdjan.majstorovic:9
+--changeset srdjan.majstorovic:8
 create table  Crayon.Licence(
     Id int generated always as identity primary key not null,
     SubscriptionId int not null,
@@ -74,7 +74,7 @@ create table  Crayon.Licence(
     LicenceKey varchar(50) not null
 )
 
---changeset srdjan.majstorovic:10
+--changeset srdjan.majstorovic:9
 INSERT INTO Crayon.Customer (Name) VALUES ('Foo Co.');
 INSERT INTO Crayon.Customer (Name) VALUES ('Bar Co.');
 INSERT INTO Crayon.Customer (Name) VALUES ('Baz Ltd.');
