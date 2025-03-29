@@ -1,4 +1,4 @@
 
 namespace Crayon.API.Models;
 
-public record NewOrder(string CustomerId, string AccountId, IList<NewOrderItem> Items);
+public record NewOrder(int CustomerId, int AccountId, IEnumerable<NewOrderItem> Items);

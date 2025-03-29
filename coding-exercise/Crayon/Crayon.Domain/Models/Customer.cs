@@ -7,8 +7,8 @@ public class Customer
 {
     [Key]
     [ForeignKey(nameof(User))]
-    public int Id { get; init; }
-    public required string Name { get; init; }
+    public int Id { get; set; }
+    public required string Name { get; set; }
     
     public virtual User User { get; set; } = null!;
     public virtual ICollection<Account> Accounts { get; set; } = new List<Account>();
@@ -16,9 +16,9 @@ public class Customer
 
 public class User
 {
-    public int Id { get; init; }
-    public required string Email { get; init; }
-    public required string Name { get; init; }
+    public int Id { get; set; }
+    public required string Email { get; set; }
+    public required string Name { get; set; }
 
     // Navigation property for one-to-one relationship
     public virtual Customer? Customer { get; set; }
@@ -26,9 +26,9 @@ public class User
 
 public class Account
 {
-    public int Id { get; init; }          
-    public required string Name { get; init; }   
-    public required int CustomerId { get; init; }
+    public int Id { get; set; }          
+    public required string Name { get; set; }   
+    public required int CustomerId { get; set; }
 
     public virtual Customer Customer { get; set; } = null!;
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
@@ -36,12 +36,13 @@ public class Account
 
 public class Order
 {
-    public int Id { get; init; }          
-    public required int AccountId { get; init; }   
-    public required OrderStatus Status { get; init; }   
-    public required string? FailureReason { get; init; } 
-    public required DateTimeOffset? CreatedAt { get; init; } 
-    public required DateTimeOffset? UpdatedAt { get; init; }
+    public int Id { get; set; }          
+    public required int AccountId { get; set; }   
+    public required OrderStatus Status { get; set; }
+    public string? ExternalOrderId { get; set; } 
+    public string? FailureReason { get; set; } 
+    public required DateTimeOffset? CreatedAt { get; set; } 
+    public DateTimeOffset? UpdatedAt { get; set; }
 
     public virtual Account Account { get; set; } = null!;
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
@@ -49,31 +50,31 @@ public class Order
 
 public class OrderItem
 {
-    public int Id { get; init; }           
-    public required int OrderId { get; init; }      
-    public required int SoftwareId { get; init; }   
-    public required int LicenceCount { get; init; } 
-    public required DateTimeOffset? LicencedUntil { get; init; }
+    public int Id { get; set; }           
+    public required int OrderId { get; set; }      
+    public required int SoftwareId { get; set; }   
+    public required int LicenceCount { get; set; } 
+    public required DateTimeOffset? LicenceValidTo { get; set; }
 
     public virtual Order Order { get; set; } = null!;
 }
 
 public class Subscription
 {
-    public int Id { get; init; }            
-    public required string SoftwareName { get; init; } 
-    public required SubscriptionStatus Status { get; init; }       
-    public required DateTimeOffset CreatedAt { get; init; }
+    public int Id { get; set; }            
+    public required string SoftwareName { get; set; } 
+    public required SubscriptionStatus Status { get; set; }       
+    public required DateTimeOffset CreatedAt { get; set; }
 
     public virtual ICollection<Licence> Licences { get; set; } = new List<Licence>();
 }
 
 public class Licence
 {
-    public int Id { get; init; }             
-    public required int SubscriptionId { get; init; } 
-    public required DateTimeOffset ValidTo { get; init; }   
-    public required string LicenceKey { get; init; }
+    public int Id { get; set; }             
+    public required int SubscriptionId { get; set; } 
+    public required DateTimeOffset ValidTo { get; set; }   
+    public required string LicenceKey { get; set; }
 
     public virtual Subscription Subscription { get; set; } = null!;
 }

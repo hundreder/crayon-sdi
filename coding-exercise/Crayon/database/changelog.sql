@@ -32,21 +32,22 @@ create table  crayon.account (
 )
 
 --changeset srdjan.majstorovic:5
-create table  crayon.Order (
+create table  crayon.order (
     id int generated always as identity primary key not null,
-    accountid int not null,
+    account_id int not null,
     status varchar(50) not null,
-    failure_reason varchar(50) not null,
-    created_at timestamptz,
+    external_order_id varchar(50),
+    failure_reason varchar(50),
+    created_at timestamptz not null,
     updated_at timestamptz,
     
     CONSTRAINT FK_account
-        FOREIGN KEY (accountid) REFERENCES crayon.account (id)
+        FOREIGN KEY (account_id) REFERENCES crayon.account (id)
 
 )
 
 --changeset srdjan.majstorovic:6
-create table  crayon.OrderItem (
+create table  crayon.order_item (
     id int generated always as identity primary key not null,
     order_id int not null,
     software_id int not null,

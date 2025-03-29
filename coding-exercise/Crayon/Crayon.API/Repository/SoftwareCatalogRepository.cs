@@ -6,7 +6,7 @@ namespace Crayon.API.Repository;
 public interface ISoftwareCatalogRepository
 {
     Task<SoftwareCatalog> GetSoftwareCatalog(string? nameLike, int? skip, int? take, CancellationToken ct);
-    Task<IEnumerable<Software>> GetSoftware(IEnumerable<string> ids, CancellationToken ct);
+    Task<IEnumerable<Software>> GetSoftware(IEnumerable<int> ids, CancellationToken ct);
 }
 
 public class SoftwareCatalogRepository(ICcpApiClient ccpApiClient) : ISoftwareCatalogRepository
@@ -24,7 +24,7 @@ public class SoftwareCatalogRepository(ICcpApiClient ccpApiClient) : ISoftwareCa
         return new(filteredItems, entireCatalog.Count);
     }
 
-    public async Task<IEnumerable<Software>> GetSoftware(IEnumerable<string> ids, CancellationToken ct) =>
+    public async Task<IEnumerable<Software>> GetSoftware(IEnumerable<int> ids, CancellationToken ct) =>
         ccpApiClient.GetEntireCatalog()
             .Where(s => ids.Contains(s.Id));
 }
