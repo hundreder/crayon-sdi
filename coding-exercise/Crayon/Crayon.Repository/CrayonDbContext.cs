@@ -24,6 +24,12 @@ public class CrayonDbContext : DbContext
         modelBuilder.Entity<OrderItem>()
             .ToTable("order_item", "crayon");
     }
+    
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+     
+        configurationBuilder.Properties<Enum>().HaveConversion<string>();
+    }
 
     public DbSet<User> Users { get; set; }
     public DbSet<Customer> Customers { get; set; }
