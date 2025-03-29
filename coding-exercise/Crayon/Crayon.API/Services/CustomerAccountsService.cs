@@ -1,17 +1,19 @@
-using Crayon.API.Models;
+using Crayon.Domain.Models;
+using Crayon.Repository;
+using Microsoft.EntityFrameworkCore;
 
 namespace Crayon.API.Services;
 
 public interface ICustomerAccountsService
 {
-    Task<IEnumerable<CustomerAccount>> GetAccounts(string customerId, CancellationToken ct);
+    Task<Customer> GetCustomerAndAccounts(int userId, CancellationToken ct);
 }
 
-public class CustomerAccountsService : ICustomerAccountsService
+public class CustomerAccountsService( CrayonDbContext dbContext) : ICustomerAccountsService
 {
-    public async Task<IEnumerable<CustomerAccount>> GetAccounts(string customerId, CancellationToken ct) =>
-    [
-        new CustomerAccount("1", "Account 1", customerId),
-        new CustomerAccount("2", "Account 2", customerId)
-    ];
+    public async Task<Customer> GetCustomerAndAccounts(int userId, CancellationToken ct) =>
+        await
+            dbContext.Customers
+                .Include(c => c.Accounts)
+                .SingleAsync(c => c.Id == userId, cancellationToken: ct);
 }

@@ -17,24 +17,19 @@ public static class SecuredEndpoints
             .ProducesProblem(StatusCodes.Status500InternalServerError);
 
         apiGroup
-            .MapGet("user", (
-                    [FromServices] ILoggedInUserAccessor loggedInUserAccessor,
-                    HttpContext context,
-                    CancellationToken ct) =>
-                loggedInUserAccessor.User())
+            .MapGet("user", async (
+                [FromServices] IUserService userService,
+                CancellationToken ct) => (await userService.GetLoggedInUser(ct)).ToResponse())
             .Produces<LoggedInUserResponse>();
 
         apiGroup
             .MapGet("accounts", async (
                 [FromServices] ICustomerAccountsService accountsService,
-                [FromServices] ILoggedInUserAccessor loggedInUserAccessor,
+                [FromServices] ICurrentUserAccessor loggedInUserAccessor,
                 CancellationToken ct) =>
             {
-                var user = loggedInUserAccessor.User();
-                var accounts = await accountsService.GetAccounts(user.CustomerId, ct);
-                var response = CustomerAccountsResponse.Create(accounts);
-
-                return response;
+                var userId = loggedInUserAccessor.User().UserId;
+                return (await accountsService.GetCustomerAndAccounts(userId, ct)).ToResponse();
             })
             .Produces<CustomerAccountsResponse>();
 
@@ -43,22 +38,22 @@ public static class SecuredEndpoints
                 [FromRoute] string accountId,
                 [FromBody] NewOrderRequest newOrderRequest,
                 [FromServices] IOrdersService ordersService,
-                [FromServices] ILoggedInUserAccessor loggedInUserAccessor,
+                [FromServices] ICurrentUserAccessor loggedInUserAccessor,
                 CancellationToken ct
             ) =>
             {
-                var customerId = loggedInUserAccessor.User().CustomerId;
+                var customerId = loggedInUserAccessor.User().UserId.ToString();
                 var items = newOrderRequest
                     .ItemsToOrder
                     .Select(i => new NewOrderItem(i.SoftwareId, i.LicenseCount, i.LicencedUntil))
                     .ToList();
 
                 var newOrder = new NewOrder(customerId, accountId, items);
-                var createdOrder = 
+                var createdOrder =
                     (await ordersService.CreateOrder(newOrder, ct))
                     .Match(
                         order => Results.Created($"accounts/{accountId}/orders/{order.Id}", new NewOrderResponse(order.Id)),
-                        error=> Results.Problem(new ProblemDetails()
+                        error => Results.Problem(new ProblemDetails()
                         {
                             Title = error.ToString(),
                             Detail = "Failed to create order.",
@@ -72,8 +67,7 @@ public static class SecuredEndpoints
             })
             .Produces<NewOrderResponse>(201)
             .ProducesProblem(400);
-        
-       
+
 
         return builder;
     }

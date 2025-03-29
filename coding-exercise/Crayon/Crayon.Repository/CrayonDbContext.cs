@@ -11,13 +11,17 @@ public class CrayonDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+        
         modelBuilder.Entity<User>()
             .ToTable("user", "crayon");
         modelBuilder.Entity<Customer>()
             .ToTable("customer", "crayon");
-        base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<Account>()
+            .ToTable("account", "crayon");
     }
 
     public DbSet<User> Users { get; set; }
     public DbSet<Customer> Customers { get; set; }
+    public DbSet<Account> Accounts { get; set; }
 }

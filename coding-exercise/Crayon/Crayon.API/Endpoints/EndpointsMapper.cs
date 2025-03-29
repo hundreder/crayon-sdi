@@ -4,9 +4,10 @@ public static class EndpointsMapper
 {
     public static IEndpointRouteBuilder MapEndpoints(this IEndpointRouteBuilder builder)
     {
-        builder.MapPublicEndpoints()
-            .MapSecureEndpoints()
-            .MapWeatherEndpoints();
+        builder
+            .MapPublicEndpoints()
+            .MapSecureEndpoints();
+            
         return builder;
     }
 }

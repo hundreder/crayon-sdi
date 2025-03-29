@@ -14,15 +14,15 @@ public static class PublicEndpoints
         publicApiGroup
             .MapPost("login", async (
                 [FromBody] LoginRequest request,
-                [FromServices] IAuthenticationService loginService,
+                [FromServices] IUserService loginService,
                 CancellationToken ct) =>
             {
-                var token = (await loginService.Login(request.Email, request.Password))
+                var token = (await loginService.Login(request.Email, request.Password, ct))
                     .Match(
                         jwt => Results.Ok(new LoginResponse(jwt)),
                         _ => Results.Problem(new ProblemDetails
                         {
-                            Title = "InvalidCredentials", // we dont want to return the real reason, but we should log that
+                            Title = "InvalidCredentials", // we dont want to return the real reason, but we should log what happened
                             Detail = "Login failed.",
                             Status = StatusCodes.Status400BadRequest,
                         }));

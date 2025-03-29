@@ -45,10 +45,16 @@ Usefull liquibase commands
 
 
 DB is seeded with several users, customers and accounts.
-Emails:
 
 
 # Login
+Login e
+Emails:
+- foouser@test.com
+- baruser@test.com
+- baruser@test.com
+
+Password is: ```1```
 
 
 

@@ -14,18 +14,21 @@ services.AddSingleton(appSettings);
 
 services
     .AddCustomAuthentication(appSettings)
-    .AddScoped<IAuthenticationService, AuthenticationService>()
+    .AddScoped<IUserService, UserService>()
     .AddHttpContextAccessor()
-    .AddScoped<ILoggedInUserAccessor, LoggedInUserAccessor>()
+    .AddScoped<ICurrentUserAccessor, CurrentUserAccessor>()
     .AddScoped<ICustomerAccountsService, CustomerAccountsService>()
     .AddScoped<ISoftwareCatalogRepository, SoftwareCatalogRepository>()
     .AddScoped<ISoftwareCatalogService, SoftwareCatalogService>()
-    .AddScoped<IOrdersService, OrdersService>();
+    .AddScoped<IOrdersService, OrdersService>()
+    .AddScoped<IUserService, UserService>()
+    .AddSingleton<IAuthenticationService, AuthenticationService>();
 
 services.AddHttpClient<ICcpApiClient, CcpApiClient>();
-services.AddDbContext<CrayonDbContext>(builder =>
+services.AddDbContext<CrayonDbContext>(optionsBuilder =>
 {
-    builder.UseNpgsql(appSettings.ConnectionString)
+    optionsBuilder.UseNpgsql(appSettings.ConnectionString)
+        .UseLazyLoadingProxies()
         .UseSnakeCaseNamingConvention();
 });
 

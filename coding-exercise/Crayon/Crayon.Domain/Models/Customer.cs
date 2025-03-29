@@ -1,28 +1,33 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Crayon.Domain.Models;
 
 public class Customer
 {
-    public int Id { get; init; }           
-    public required string Name { get; init; }      
-
-    // Navigation properties
-    public virtual ICollection<User> Users { get; set; } = new List<User>();
+    [Key]
+    [ForeignKey(nameof(User))]
+    public int Id { get; init; }
+    public required string Name { get; init; }
+    
+    public virtual User User { get; set; } = null!;
     public virtual ICollection<Account> Accounts { get; set; } = new List<Account>();
 }
 
 public class User
 {
-    public int Id { get; init; }        
-    public required string Email { get; init; }    
-    public required int? CustomerId { get; set; } 
+    public int Id { get; init; }
+    public required string Email { get; init; }
+    public required string Name { get; init; }
 
-    // Navigation property
-    public virtual Customer Customer { get; set; } = null!;
+    // Navigation property for one-to-one relationship
+    public virtual Customer? Customer { get; set; }
 }
 
 public class Account
 {
     public int Id { get; init; }          
+    public required string Name { get; init; }   
     public required int CustomerId { get; init; }
 
     public virtual Customer Customer { get; set; } = null!;
