@@ -38,14 +38,9 @@ public static class PublicEndpoints
                 CancellationToken ct,
                 [FromQuery] int? skip = 0,
                 [FromQuery] int? take = 10
-            ) =>
-            {
-                //basic input validation should be added
-
-                var sc = await softwareCatalogService.GetSoftwareCatalog(nameLike, skip, take, ct);
-
-                return SoftwareCatalogResponse.Create(sc);
-            })
+            ) => 
+                //basic validation should be performed
+                (await softwareCatalogService.GetSoftwareCatalog(nameLike, skip, take, ct)).ToResponse())
             .Produces<SoftwareCatalogResponse>()
             .ProducesProblem(400);
 
