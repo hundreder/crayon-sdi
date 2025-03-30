@@ -69,6 +69,7 @@ public class Subscription
     public required DateTimeOffset CreatedAt { get; set; }
     public required int AccountId { get; set; }   
 
+    public virtual Account Account { get; set; } = null!;
     public virtual ICollection<Licence> Licences { get; set; } = new List<Licence>();
 }
 

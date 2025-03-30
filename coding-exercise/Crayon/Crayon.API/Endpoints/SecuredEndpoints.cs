@@ -81,6 +81,34 @@ public static class SecuredEndpoints
             .Produces<SubscriptionsResponse>();
 
 
+        apiGroup
+            .MapPost("licences/{licenceId}/licence-count", async (
+                [FromRoute] int licenceId,
+                [FromBody] NewLicenceCountRequest request,
+                [FromServices] ICustomerAccountsService accountsService,
+                [FromServices] ICurrentUserAccessor loggedInUserAccessor,
+                CancellationToken ct
+            ) =>
+            {
+                var customerId = loggedInUserAccessor.User().UserId;
+
+                return (await accountsService.ChangeLicenceCount(customerId, licenceId, request.LicenceCount, ct))
+                    .Match(
+                        _ => Results.Ok(),
+                        error => error switch
+                        {
+                            ChangeLicenceCountError.LicenceDoesNotExist => Results.Problem(new ProblemDetails()
+                            {
+                                Title = error.ToString(),
+                                Detail = "Setting new licence count failed.",
+                                Status = StatusCodes.Status404NotFound,
+                            }),
+                            _ => throw new ArgumentOutOfRangeException(nameof(error), error, null)
+                        });
+            })
+            .Produces<SubscriptionsResponse>();
+
+
         return builder;
     }
 }

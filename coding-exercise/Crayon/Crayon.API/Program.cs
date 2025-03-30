@@ -14,10 +14,7 @@ var appSettings = builder.Configuration.GetSection("AppSettings").Get<AppSetting
 services.AddSingleton(appSettings);
 
 
-services.ConfigureHttpJsonOptions(options =>
-{
-    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
-});
+services.ConfigureHttpJsonOptions(options => { options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 
 services
     .AddCustomAuthentication(appSettings)
@@ -30,13 +27,13 @@ services
     .AddScoped<IOrdersService, OrdersService>()
     .AddScoped<IUserService, UserService>()
     .AddScoped<IPurchaseService, PurchaseService>()
-    .AddSingleton<IAuthenticationService, AuthenticationService>();
+    .AddSingleton<IAuthenticationService, AuthenticationService>()
+    .AddMediatR(cfg =>
+    {
+        cfg.RegisterServicesFromAssemblyContaining<Program>();
+        cfg.Lifetime = ServiceLifetime.Scoped;
+    });
 
-services.AddMediatR(cfg =>
-{
-    cfg.RegisterServicesFromAssemblyContaining<Program>();
-    cfg.Lifetime = ServiceLifetime.Scoped;
-});
 
 services.AddHttpClient<ICcpApiClient, CcpApiClient>();
 services.AddDbContext<CrayonDbContext>(optionsBuilder =>
@@ -46,8 +43,6 @@ services.AddDbContext<CrayonDbContext>(optionsBuilder =>
         .UseSnakeCaseNamingConvention();
 });
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi(options =>
 {
     options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
