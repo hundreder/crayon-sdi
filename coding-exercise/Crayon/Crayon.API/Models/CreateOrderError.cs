@@ -4,5 +4,6 @@ public enum CreateOrderError
 {
     AccountNotFound,
     SoftwareNotFound,
+    NoItemsInOrder,
     SubmittingOrderToExternalProviderFailed
 }

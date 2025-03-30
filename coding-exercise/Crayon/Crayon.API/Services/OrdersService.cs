@@ -1,12 +1,9 @@
 using Crayon.API.ApiClients;
 using Crayon.API.Models;
+using Crayon.Domain.Models;
 using Crayon.Repository;
 using LanguageExt;
 using Microsoft.EntityFrameworkCore;
-using Order = Crayon.Domain.Models.Order;
-using OrderItem = Crayon.Domain.Models.OrderItem;
-using OrderStatus = Crayon.Domain.Models.OrderStatus;
-
 namespace Crayon.API.Services;
 
 public interface IOrdersService
@@ -16,30 +13,24 @@ public interface IOrdersService
 
 public class OrdersService(
     CrayonDbContext dbContext,
-    ICustomerAccountsService customerAccountsService,
     ISoftwareCatalogService softwareCatalogService,
     ICcpApiClient ccpApiClient) : IOrdersService
 {
     public async Task<Either<CreateOrderError, Order>> CreateOrder(NewOrder newOrder, CancellationToken ct)
     {
-        //validation if account belongs to customer
-        bool accountBelongsToUser = await dbContext.Accounts.AnyAsync(ca => ca.Id == newOrder.AccountId && ca.CustomerId == newOrder.CustomerId, cancellationToken: ct);
+        if (!newOrder.Items.Any())
+            return CreateOrderError.NoItemsInOrder;
+
+        
+        var accountBelongsToUser = await AccountBelongsToUser(newOrder, ct);
         if (!accountBelongsToUser)
-        {
             // Logger.logwarning account does not belongs to a customer
             return CreateOrderError.AccountNotFound;
-        }
 
-        var softwareExists = await SoftwareExists(newOrder
-                .Items
-                .Select(i => i.SoftwareId)
-                .ToList(),
-            ct);
-
-        if (!softwareExists)
+        if (!await OrderedSoftwareIsAvailable(newOrder, ct))
             return CreateOrderError.SoftwareNotFound;
 
-        //order processing
+
         var initializedOrder = new Order()
         {
             AccountId = newOrder.AccountId,
@@ -59,7 +50,6 @@ public class OrdersService(
         dbContext.Add(initializedOrder);
         await dbContext.SaveChangesAsync(ct);
 
-
         var order = (await ccpApiClient.SendOrder(initializedOrder))
             .Map(externalOrderId =>
                 {
@@ -71,6 +61,7 @@ public class OrdersService(
             )
             .MapLeft(error =>
             {
+                // Logger.logwarning saving order as failed for analysis of what happend
                 initializedOrder.Status = OrderStatus.Failed;
                 initializedOrder.UpdatedAt = DateTimeOffset.UtcNow;
                 initializedOrder.FailureReason = error.ToString();
@@ -81,10 +72,22 @@ public class OrdersService(
 
         return order;
     }
-    
-    private async Task<bool> SoftwareExists(List<int> softwareIds, CancellationToken ct)
+
+    private async Task<bool> AccountBelongsToUser(NewOrder newOrder, CancellationToken ct) =>
+        await dbContext
+            .Accounts
+            .AnyAsync(ca => ca.Id == newOrder.AccountId
+                            && ca.CustomerId == newOrder.CustomerId
+                , cancellationToken: ct);
+
+
+    private async Task<bool> OrderedSoftwareIsAvailable(NewOrder newOrder, CancellationToken ct)
     {
-        var softwareList = await softwareCatalogService.GetSoftware(softwareIds, ct);
-        return softwareList.Count() == softwareIds.Count; //poor man's check. Ideally list of nonexistent ids should be returned
+        var orderedSoftwareIds = newOrder.Items
+            .Select(i => i.SoftwareId)
+            .ToList();
+
+        var existingSoftwareIds = await softwareCatalogService.GetSoftware(orderedSoftwareIds, ct);
+        return existingSoftwareIds.Count() == orderedSoftwareIds.Count; //poor man's check. Ideally list of nonexistent ids should be returned
     }
 }
