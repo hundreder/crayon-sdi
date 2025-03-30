@@ -80,39 +80,52 @@ public static class SecuredEndpoints
             })
             .Produces<SubscriptionsResponse>();
 
+        apiGroup
+            .MapPost("subscriptions{subscriptionId}/cancel", async (
+                    [FromRoute] int subscriptionId,
+                    [FromServices] ICustomerAccountsService accountsService,
+                    [FromServices] ICurrentUserAccessor loggedInUserAccessor,
+                    CancellationToken ct) =>
+                (await accountsService.CancelSubscription(
+                    loggedInUserAccessor.User().UserId,
+                    subscriptionId,
+                    ct))
+                .Match(
+                    _ => Results.Ok(),
+                    error => Results.Problem(new ProblemDetails
+                    {
+                        Title = error.ToString(),
+                        Detail = "Canceling subscription failed. Check your input and try again.",
+                        Status = StatusCodes.Status400BadRequest,
+                    })
+                ))
+            .Produces(StatusCodes.Status200OK);
+
 
         apiGroup
             .MapPost("licences/{licenceId}/licence-count", async (
-                [FromRoute] int licenceId,
-                [FromBody] NewLicenceCountRequest request,
-                [FromServices] ICustomerAccountsService accountsService,
-                [FromServices] ICurrentUserAccessor loggedInUserAccessor,
-                CancellationToken ct
-            ) =>
-            {
-                var customerId = loggedInUserAccessor.User().UserId;
-
-                return (await accountsService.ChangeLicenceCount(customerId, licenceId, request.LicenceCount, ct))
-                    .Match(
-                        _ => Results.Ok(),
-                        error => error switch
-                        {
-                            ChangeLicenceCountError.LicenceDoesNotExist => Results.Problem(new ProblemDetails()
-                            {
-                                Title = error.ToString(),
-                                Detail = "Setting new licence count failed.",
-                                Status = StatusCodes.Status404NotFound,
-                            }),
-                            ChangeLicenceCountError.NewLicenceCountCantBeSameAsExising =>Results.Problem(new ProblemDetails()
+                    [FromRoute] int licenceId,
+                    [FromBody] NewLicenceCountRequest request,
+                    [FromServices] ICustomerAccountsService accountsService,
+                    [FromServices] ICurrentUserAccessor loggedInUserAccessor,
+                    CancellationToken ct) =>
+                (await accountsService.ChangeLicenceCount(
+                    loggedInUserAccessor.User().UserId,
+                    licenceId,
+                    request.LicenceCount,
+                    ct))
+                .Match(
+                    _ => Results.Ok(),
+                    error =>
+                        Results.Problem(new ProblemDetails()
                             {
                                 Title = error.ToString(),
                                 Detail = "Setting new licence count failed. Check your input and try again.",
                                 Status = StatusCodes.Status400BadRequest,
-                            }),
-                            _ => throw new ArgumentOutOfRangeException(nameof(error), error, null)
-                        });
-            })
-            .Produces<SubscriptionsResponse>();
+                            }
+                        )
+                ))
+            .Produces(StatusCodes.Status200OK);
 
 
         return builder;

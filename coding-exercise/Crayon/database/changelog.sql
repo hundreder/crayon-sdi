@@ -66,6 +66,7 @@ create table  crayon.Subscription(
     software_name varchar(50) not null,
     status varchar(50) not null,
     created_at timestamptz not null,
+    updated_at timestamptz,
 
     CONSTRAINT fk_account
         FOREIGN KEY (account_id) REFERENCES crayon.account (id)

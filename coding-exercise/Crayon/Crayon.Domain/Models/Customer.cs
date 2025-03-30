@@ -67,6 +67,7 @@ public class Subscription
     public required string SoftwareName { get; set; } 
     public required SubscriptionStatus Status { get; set; }       
     public required DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset? UpdatedAt { get; set; }
     public required int AccountId { get; set; }   
 
     public virtual Account Account { get; set; } = null!;
