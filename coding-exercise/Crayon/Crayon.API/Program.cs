@@ -11,6 +11,9 @@ using Crayon.Services.Services.Events;
 using Microsoft.EntityFrameworkCore;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.AddConsole();
@@ -24,6 +27,8 @@ services.AddFluentValidationAutoValidation();
 
 services.ConfigureHttpJsonOptions(options => { options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 //services.AddHttpLogging(o => { });
+
+builder.Services.AddOpenTelemetryTracing();
 
 services
     .AddCustomAuthentication(appSettings)
@@ -59,6 +64,7 @@ services
 services.AddHttpClient<ICcpApiClient, CcpApiClient>();
 
 var app = builder.Build();
+app.UseAddTraceIdHeader();
 app.UseGlobalExceptionHandler(app.Environment.IsDevelopment());
 //app.UseHttpLogging();
 

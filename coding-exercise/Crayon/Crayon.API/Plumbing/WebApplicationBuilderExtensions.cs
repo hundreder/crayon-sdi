@@ -3,6 +3,8 @@ using Crayon.API.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Crayon.API.Plumbing;
@@ -34,7 +36,21 @@ public static class WebApplicationBuilderExtensions
                 };
             });
         services.AddAuthorization();
-            
+
+        return services;
+    }
+
+    public static IServiceCollection AddOpenTelemetryTracing(this IServiceCollection services)
+    {
+        services.AddOpenTelemetry()
+            .WithTracing(tracerProviderBuilder =>
+            {
+                tracerProviderBuilder
+                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("CrayonServices"))
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddConsoleExporter();
+            });
         return services;
     }
 }

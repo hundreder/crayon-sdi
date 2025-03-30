@@ -42,4 +42,23 @@ public static class ApplicationBuilderExtensions
 
         return app;
     }
+
+    public static IApplicationBuilder UseAddTraceIdHeader(this IApplicationBuilder app, bool includeExceptionDetails = false)
+    {
+        app.Use(async (context, next) =>
+        {
+            try
+            {
+                var activity = System.Diagnostics.Activity.Current;
+                if (activity != null)
+                {
+                    context.Response.Headers.Add("X-Trace-Id", activity.TraceId.ToString());
+                }
+            }
+            catch { }
+            
+            await next(); 
+        });
+        return app;
+    }
 }
