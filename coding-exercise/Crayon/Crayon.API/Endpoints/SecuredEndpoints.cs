@@ -20,7 +20,8 @@ public static class SecuredEndpoints
             .MapGet("user", async (
                 [FromServices] IUserService userService,
                 CancellationToken ct) => (await userService.GetLoggedInUser(ct)).ToResponse())
-            .Produces<LoggedInUserResponse>();
+            .Produces<LoggedInUserResponse>()
+            .WithDescription("Get logged in user data.");
 
         apiGroup
             .MapGet("accounts", async (
@@ -31,7 +32,8 @@ public static class SecuredEndpoints
                 var customerId = loggedInUserAccessor.User().UserId;
                 return (await accountsService.GetCustomerAndAccounts(customerId, ct)).ToResponse();
             })
-            .Produces<CustomerAccountsResponse>();
+            .Produces<CustomerAccountsResponse>()
+            .WithDescription("Get logged in user account.");
 
         apiGroup
             .MapPost("accounts/{accountId}/orders", async (
@@ -44,10 +46,7 @@ public static class SecuredEndpoints
             {
                 var customerId = loggedInUserAccessor.User().UserId;
                 var newOrder = newOrderRequest.ToModel(customerId, accountId);
-
-                //validation
-                //minimum 1 item in order
-
+                
                 var createdOrder =
                     (await ordersService.CreateOrder(newOrder, ct))
                     .Match(
@@ -65,7 +64,8 @@ public static class SecuredEndpoints
                 return createdOrder;
             })
             .Produces<NewOrderResponse>(201)
-            .ProducesProblem(400);
+            .ProducesProblem(400)
+            .WithDescription("Make order for account.");
 
         apiGroup
             .MapGet("accounts/{accountId}/subscriptions", async (
@@ -79,7 +79,8 @@ public static class SecuredEndpoints
                 return (await accountsService.GetSubscriptions(customerId, accountId, ct))
                     .ToResponse();
             })
-            .Produces<SubscriptionsResponse>();
+            .Produces<SubscriptionsResponse>()
+            .WithDescription("Get accounts subscriptions");
 
         apiGroup
             .MapPost("subscriptions{subscriptionId}/cancel", async (
@@ -104,7 +105,8 @@ public static class SecuredEndpoints
                 ))
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status400BadRequest);
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .WithDescription("Cancel specific subscription.");
 
         apiGroup
             .MapPost("licences/{licenceId}/licence-count", async (
@@ -133,7 +135,8 @@ public static class SecuredEndpoints
                 ))
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status400BadRequest);
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .WithDescription("Change licence count for specific licence.");
 
 
         apiGroup
@@ -163,7 +166,8 @@ public static class SecuredEndpoints
                 ))
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status400BadRequest);
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .WithDescription("Change licence valid to for specific licence.");
 
 
         return builder;

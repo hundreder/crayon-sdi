@@ -26,7 +26,6 @@ public class OrdersService(
         if (!newOrder.Items.Any())
             return CreateOrderError.NoItemsInOrder;
 
-        
         var accountBelongsToUser = await AccountBelongsToUser(newOrder, ct);
         if (!accountBelongsToUser)
             // Logger.logwarning account does not belongs to a customer

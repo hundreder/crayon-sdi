@@ -15,6 +15,11 @@ public static class PublicEndpoints
             .WithTags("PublicApi");
 
         publicApiGroup
+            .MapGet("health", Results.NoContent)
+            .Produces(StatusCodes.Status204NoContent)
+            .WithDescription("Service health endpoint");
+        
+        publicApiGroup
             .MapPost("login", async (
                 [FromBody] LoginRequest request,
                 [FromServices] IUserService loginService,
@@ -32,6 +37,7 @@ public static class PublicEndpoints
 
                 return token;
             })
+            .WithDescription("Login with credentials endpoint")
             .Produces<LoginResponse>()
             .ProducesProblem(400);
 
@@ -45,7 +51,9 @@ public static class PublicEndpoints
                 //basic validation should be performed
                 (await softwareCatalogService.GetSoftwareCatalog(nameLike, skip, take, ct)).ToResponse())
             .Produces<SoftwareCatalogResponse>()
-            .ProducesProblem(400);
+            .ProducesProblem(400)
+            .WithDescription("Get software catalog endpoint");
+
 
         return builder;
     }
