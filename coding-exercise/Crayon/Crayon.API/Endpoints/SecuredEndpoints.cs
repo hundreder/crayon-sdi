@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Crayon.API.Endpoints.Dto;
 using Crayon.Domain.Errors;
 using Crayon.Services.Services;
+using FluentValidation;
 
 namespace Crayon.API.Endpoints;
 

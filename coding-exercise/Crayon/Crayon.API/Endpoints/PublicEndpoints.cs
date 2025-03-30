@@ -1,9 +1,8 @@
 using Crayon.API.Endpoints.Dto;
 using Crayon.API.Services;
 using Crayon.Services.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi.Any;
-using Microsoft.OpenApi.Models;
 
 namespace Crayon.API.Endpoints;
 
@@ -18,7 +17,7 @@ public static class PublicEndpoints
             .MapGet("health", Results.NoContent)
             .Produces(StatusCodes.Status204NoContent)
             .WithDescription("Service health endpoint");
-        
+
         publicApiGroup
             .MapPost("login", async (
                 [FromBody] LoginRequest request,
@@ -42,18 +41,29 @@ public static class PublicEndpoints
             .ProducesProblem(400);
 
         publicApiGroup.MapGet("catalog", async (
-                [FromServices] ISoftwareCatalogService softwareCatalogService,
-                [FromQuery] string? nameLike,
-                CancellationToken ct,
-                [FromQuery] int? skip = 0,
-                [FromQuery] int? take = 10
-            ) => 
-                //basic validation should be performed
-                (await softwareCatalogService.GetSoftwareCatalog(nameLike, skip, take, ct)).ToResponse())
+                    [FromServices] ISoftwareCatalogService softwareCatalogService,
+                    [FromQuery] string? nameLike,
+                    CancellationToken ct,
+                    IValidator<CatalogRequest> validator,
+                    [FromQuery] int? skip = 0,
+                    [FromQuery] int? take = 10
+                ) =>
+            {
+                var request = new CatalogRequest(nameLike, skip, take);
+                var validationResult = await validator.ValidateAsync(request, ct);
+                if (!validationResult.IsValid)
+                {
+                    var errors = validationResult.ToDictionary();
+                    return Results.ValidationProblem(errors);
+                }
+
+                return Results.Ok((await softwareCatalogService.GetSoftwareCatalog(nameLike, skip, take, ct))
+                    .ToResponse()
+                );
+            })
             .Produces<SoftwareCatalogResponse>()
             .ProducesProblem(400)
             .WithDescription("Get software catalog endpoint");
-
 
         return builder;
     }

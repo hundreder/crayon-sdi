@@ -1,3 +1,5 @@
+using FluentValidation;
+
 namespace Crayon.API.Endpoints;
 
 public static class EndpointsMapper
@@ -7,7 +9,7 @@ public static class EndpointsMapper
         builder
             .MapPublicEndpoints()
             .MapSecureEndpoints();
-            
+        
         return builder;
     }
 }

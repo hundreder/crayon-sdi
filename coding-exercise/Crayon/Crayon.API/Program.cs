@@ -8,12 +8,16 @@ using Crayon.Repository.ApiClients;
 using Crayon.Services.Services;
 using Crayon.Services.Services.Events;
 using Microsoft.EntityFrameworkCore;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var appSettings = builder.Configuration.GetSection("AppSettings").Get<AppSettings>()!;
 services.AddSingleton(appSettings);
 
+services.AddValidatorsFromAssemblyContaining<Program>();
+services.AddFluentValidationAutoValidation();
 
 services.ConfigureHttpJsonOptions(options => { options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 
@@ -33,22 +37,21 @@ services
     {
         cfg.RegisterServicesFromAssemblyContaining<CompletedOrderHandler>();
         cfg.Lifetime = ServiceLifetime.Scoped;
+    })
+    .AddDbContext<CrayonDbContext>(optionsBuilder =>
+    {
+        optionsBuilder.UseNpgsql(appSettings.ConnectionString)
+            .UseLazyLoadingProxies()
+            .UseSnakeCaseNamingConvention();
+    })
+    .AddOpenApi(options =>
+    {
+        options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+        options.OpenApiVersion = Microsoft.OpenApi.OpenApiSpecVersion.OpenApi3_0;
     });
 
 
 services.AddHttpClient<ICcpApiClient, CcpApiClient>();
-services.AddDbContext<CrayonDbContext>(optionsBuilder =>
-{
-    optionsBuilder.UseNpgsql(appSettings.ConnectionString)
-        .UseLazyLoadingProxies()
-        .UseSnakeCaseNamingConvention();
-});
-
-builder.Services.AddOpenApi(options =>
-{
-    options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
-    options.OpenApiVersion = Microsoft.OpenApi.OpenApiSpecVersion.OpenApi3_0;
-});
 
 var app = builder.Build();
 
