@@ -1,3 +1,3 @@
 namespace Crayon.Services.Models;
 
-public record NewOrderItem(int SoftwareId, int LicenseCount, DateTime LicencedExpiration);
+public record NewOrderItem(int SoftwareId, int LicenseCount, DateTimeOffset LicencedExpiration);
