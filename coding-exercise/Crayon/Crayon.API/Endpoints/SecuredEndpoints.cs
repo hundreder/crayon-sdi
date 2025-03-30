@@ -51,7 +51,7 @@ public static class SecuredEndpoints
                 var createdOrder =
                     (await ordersService.CreateOrder(newOrder, ct))
                     .Match(
-                        order => Results.Created($"accounts/{accountId}/orders/{order.Id}", new NewOrderResponse(order.Id)),
+                        order => Results.Created($"accounts/{accountId}/orders/{order.OrderId}", new NewOrderResponse(order.OrderId, order.CcpOrderId)),
                         error => Results.Problem(new ProblemDetails()
                         {
                             Title = error.ToString(),

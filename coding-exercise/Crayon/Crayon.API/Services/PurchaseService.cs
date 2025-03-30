@@ -19,22 +19,23 @@ public class PurchaseService(CrayonDbContext dbContext) : IPurchaseService
 
 
         var subscriptions = licenceKeysBySoftwareId.Select(item => new Subscription()
-        {
-            AccountId = accountId,
-            CreatedAt = DateTimeOffset.Now,
-            Status = SubscriptionStatus.Active,
-            SoftwareId = item.Key,
-            SoftwareName = item.Key.ToString(),
-            Licences = item.Value.Select(licence => new Licence()
-                {
-                    LicenceKey = licence.LicenceKey,
-                    ValidTo = licence.LicenceValidTo,
-                })
-                .ToList()
-        });
+            {
+                AccountId = accountId,
+                CreatedAt = DateTimeOffset.UtcNow,
+                Status = SubscriptionStatus.Active,
+                SoftwareId = item.Key,
+                SoftwareName = item.Key.ToString(),
+                Licences = item.Value.Select(licence => new Licence()
+                    {
+                        LicenceKey = licence.LicenceKey,
+                        ValidTo = licence.LicenceValidTo,
+                    })
+                    .ToList()
+            })
+            .ToList();
 
-        dbContext.Add(subscriptions);
+        dbContext.Subscriptions.AddRange(subscriptions);
         
         await dbContext.SaveChangesAsync();
-}
+    }
 }

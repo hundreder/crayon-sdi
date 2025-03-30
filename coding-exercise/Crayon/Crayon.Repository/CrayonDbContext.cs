@@ -23,6 +23,11 @@ public class CrayonDbContext : DbContext
             .ToTable("order", "crayon");
         modelBuilder.Entity<OrderItem>()
             .ToTable("order_item", "crayon");
+        modelBuilder.Entity<Subscription>()
+            .ToTable("subscription", "crayon");
+        modelBuilder.Entity<Licence>()
+            .ToTable("licence", "crayon");
+        
     }
     
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -36,4 +41,6 @@ public class CrayonDbContext : DbContext
     public DbSet<Account> Accounts { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
+    public DbSet<Subscription> Subscriptions { get; set; }
+    public DbSet<Licence> Licences { get; set; }
 }
