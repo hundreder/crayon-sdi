@@ -42,8 +42,7 @@ public class OrdersService(
             OrderItems = newOrder.Items
                 .Select(item => new OrderItem()
                 {
-                    OrderId = 1,
-                    LicenceCount = 3,
+                    LicenceCount = item.LicenseCount,
                     SoftwareId = item.SoftwareId,
                     LicenceValidTo = item.LicencedExpiration
                 })

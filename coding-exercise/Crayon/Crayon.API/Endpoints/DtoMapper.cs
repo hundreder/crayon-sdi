@@ -20,15 +20,27 @@ public static class DtoMapper
         new(customer.Name, customer.Accounts
             .Select(a => new AccountResponse(a.Id, a.Name)));
 
-    public static NewOrderResponse ToResponse(this CompletedOrder completedOrder) => 
+    public static NewOrderResponse ToResponse(this CompletedOrder completedOrder) =>
         new(completedOrder.OrderId, completedOrder.CcpOrderId);
 
-    // public static SubscriptionsResponse ToResponse(this Subscription subscription)
-    // {
-    //     
-    // } 
-}
+    public static SubscriptionsResponse ToResponse(this IEnumerable<Subscription> subscriptions)
+    {
+        var subscriptionResponses =
+            subscriptions.Select(s =>
+                new SubscriptionResponse(s.Id,
+                    s.SoftwareId,
+                    s.SoftwareName,
+                    s.Status,
+                    s.Licences
+                        .Select(l => new LicenceResponse(
+                            l.Id,
+                            l.ValidTo,
+                            l.LicenceCount,
+                            l.LicenceKey)
+                        )
+                )
+            );
 
-// public record SubscriptionsResponse(IEnumerable<SubscriptionResponse> Subscriptions);
-//
-// public record SubscriptionResponse(int SubscriptionId, )
+        return new SubscriptionsResponse(subscriptionResponses);
+    }
+}

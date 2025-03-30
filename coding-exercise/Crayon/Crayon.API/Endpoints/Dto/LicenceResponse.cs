@@ -1,3 +1,8 @@
 namespace Crayon.API.Endpoints.Dto;
 
-public record LicenceResponse(string SoftwareName, string LicenceKey, DateTimeOffset ValidUntil);
+public record LicenceResponse(
+    int LicenceId,
+    DateTimeOffset ValidTo,
+    int LicenceCount,
+    string LicenceKey
+);

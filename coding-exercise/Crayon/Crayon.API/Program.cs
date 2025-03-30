@@ -1,20 +1,23 @@
-using System.Reflection;
+using System.Text.Json.Serialization;
 using Crayon.API.ApiClients;
 using Crayon.API.Configuration;
 using Crayon.API.Endpoints;
 using Crayon.API.Services;
 using Crayon.API.Plumbing;
 using Crayon.API.Repository;
-using Crayon.API.Services.Events;
-using Crayon.Domain.Models;
 using Crayon.Repository;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var appSettings = builder.Configuration.GetSection("AppSettings").Get<AppSettings>()!;
 services.AddSingleton(appSettings);
+
+
+services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
 services
     .AddCustomAuthentication(appSettings)
