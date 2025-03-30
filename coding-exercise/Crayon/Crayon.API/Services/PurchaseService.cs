@@ -28,6 +28,7 @@ public class PurchaseService(CrayonDbContext dbContext) : IPurchaseService
                 Licences = item.Value.Select(licence => new Licence()
                     {
                         LicenceKey = licence.LicenceKey,
+                        LicenceCount = licence.LicenceCount,
                         ValidTo = licence.LicenceValidTo,
                     })
                     .ToList()

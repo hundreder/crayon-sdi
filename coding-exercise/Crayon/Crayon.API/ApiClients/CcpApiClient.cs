@@ -1,5 +1,5 @@
 using Crayon.API.Models;
-using Order = Crayon.Domain.Models.Order;
+using Crayon.Domain.Models;
 using LanguageExt;
 
 namespace Crayon.API.ApiClients;
@@ -47,7 +47,7 @@ public class CcpApiClient(HttpClient httpClient) : ICcpApiClient
 
         var ccpOrder = new CcpOrder(
             $"CcpId-{Guid.NewGuid()}",
-            order.OrderItems.Select(oi => new SoftwareLicence(oi.SoftwareId, $"key-{Guid.NewGuid()}", oi.LicenceValidTo))
+            order.OrderItems.Select(oi => new SoftwareLicence(oi.SoftwareId, $"key-{Guid.NewGuid()}", oi.LicenceCount, oi.LicenceValidTo))
         );
 
         return ccpOrder;
@@ -56,4 +56,4 @@ public class CcpApiClient(HttpClient httpClient) : ICcpApiClient
 
 public record CcpOrder(string Id, IEnumerable<SoftwareLicence> Licences);
 
-public record SoftwareLicence(int SoftwareId, string LicenceKey, DateTimeOffset LicenceValidTo);
+public record SoftwareLicence(int SoftwareId, string LicenceKey, int LicenceCount, DateTimeOffset LicenceValidTo);

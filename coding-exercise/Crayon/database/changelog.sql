@@ -77,6 +77,7 @@ create table  crayon.Licence(
     subscription_id int not null,
     valid_to timestamptz not null,
     licence_key varchar(50) not null,
+    licence_count int not null,
 
     CONSTRAINT fk_subscription
         FOREIGN KEY (subscription_id) REFERENCES crayon.subscription (id)

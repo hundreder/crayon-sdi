@@ -47,7 +47,6 @@ public static class SecuredEndpoints
                 //validation
                 //minimum 1 item in order
                 
-                
                 var createdOrder =
                     (await ordersService.CreateOrder(newOrder, ct))
                     .Match(
@@ -67,6 +66,20 @@ public static class SecuredEndpoints
             .Produces<NewOrderResponse>(201)
             .ProducesProblem(400);
             
+        apiGroup
+            .MapPost("accounts/{accountId}/subscriptions", async (
+                [FromRoute] int accountId,
+                [FromServices] ICustomerAccountsService accountsService,
+                [FromServices] ICurrentUserAccessor loggedInUserAccessor,
+                CancellationToken ct
+            ) =>
+            {
+                var customerId = loggedInUserAccessor.User().UserId;
+                var subs = await accountsService.GetSubscriptions(customerId, accountId, ct);
+
+            })
+            .Produces<NewOrderResponse>(201)
+            .ProducesProblem(400);
 
 
         return builder;
