@@ -1,6 +1,7 @@
 using Crayon.Domain.Errors;
 using Crayon.Domain.Models;
 using Crayon.Repository;
+using Crayon.Services.Common;
 using LanguageExt;
 using Microsoft.EntityFrameworkCore;
 using Unit = LanguageExt.Unit;
@@ -16,7 +17,7 @@ public interface ICustomerAccountsService
     Task<Either<ExtendLicenceValidToDateError, Unit>> ExtendLicenceValidToDate(int customerId, int licenceId, DateTimeOffset newValidToDate, CancellationToken ct);
 }
 
-public class CustomerAccountsService(CrayonDbContext dbContext) : ICustomerAccountsService
+public class CustomerAccountsService(CrayonDbContext dbContext, IDateTimeProvider dateTimeProvider) : ICustomerAccountsService
 {
     public async Task<Customer> GetCustomerAndAccounts(int customerId, CancellationToken ct) =>
         await
@@ -47,7 +48,7 @@ public class CustomerAccountsService(CrayonDbContext dbContext) : ICustomerAccou
             return CancelSubscriptionError.SubscriptionAlreadyCanceled;
 
         subscription.Status = SubscriptionStatus.Cancelled;
-        subscription.UpdatedAt = DateTimeOffset.UtcNow;
+        subscription.UpdatedAt = dateTimeProvider.UtcNow;
         // if there is any side work to do, do it here. like calling ccp to cancel licences. Then some intermediate state od subscription should be added.
 
         await dbContext.SaveChangesAsync(ct);

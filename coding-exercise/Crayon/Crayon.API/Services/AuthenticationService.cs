@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Crayon.API.Configuration;
+using Crayon.Services.Common;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Crayon.API.Services;
@@ -11,7 +12,7 @@ public interface IAuthenticationService
     public string GenerateJwtToken(int userId);
 }
 
-public class AuthenticationService(AppSettings settings) : IAuthenticationService
+public class AuthenticationService(AppSettings settings, IDateTimeProvider dateTimeProvider) : IAuthenticationService
 {
     public string GenerateJwtToken(int userId)
     {
@@ -27,7 +28,7 @@ public class AuthenticationService(AppSettings settings) : IAuthenticationServic
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddHours(24), // should be less of course, but for the sake of ease
+            Expires = dateTimeProvider.UtcNow.DateTime.AddHours(24), // should be less of course, but for the sake of ease
             SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
         };
 

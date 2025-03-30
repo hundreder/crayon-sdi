@@ -5,6 +5,7 @@ using Crayon.API.Services;
 using Crayon.API.Plumbing;
 using Crayon.Repository;
 using Crayon.Repository.ApiClients;
+using Crayon.Services.Common;
 using Crayon.Services.Services;
 using Crayon.Services.Services.Events;
 using Microsoft.EntityFrameworkCore;
@@ -36,6 +37,7 @@ services
     .AddScoped<IUserService, UserService>()
     .AddScoped<IPurchaseService, PurchaseService>()
     .AddSingleton<IAuthenticationService, AuthenticationService>()
+    .AddSingleton<IDateTimeProvider, DateTimeProvider>()
     .AddMediatR(cfg =>
     {
         cfg.RegisterServicesFromAssemblyContaining<CompletedOrderHandler>();

@@ -2,6 +2,7 @@ using Crayon.Domain.Errors;
 using Crayon.Domain.Models;
 using Crayon.Repository;
 using Crayon.Repository.ApiClients;
+using Crayon.Services.Common;
 using Crayon.Services.Models;
 using Crayon.Services.Services;
 using Crayon.Services.Services.Events;
@@ -18,6 +19,7 @@ public class OrdersServiceTests
     private Mock<ISoftwareCatalogService> _softwareCatalogServiceMock;
     private Mock<IMediator> _mediatorMock;
     private Mock<ICcpApiClient> _ccpApiClientMock;
+    private IDateTimeProvider _dateTimeProvider = new DateTimeProvider();
     private OrdersService _ordersService;
     private NewOrder _newOrder;
     private CancellationToken cancellationToken = CancellationToken.None;
@@ -60,6 +62,7 @@ public class OrdersServiceTests
             _dbContext,
             _softwareCatalogServiceMock.Object,
             _mediatorMock.Object,
+            _dateTimeProvider,
             _ccpApiClientMock.Object);
     }
 

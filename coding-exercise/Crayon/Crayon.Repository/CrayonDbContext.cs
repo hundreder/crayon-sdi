@@ -22,7 +22,6 @@ public class CrayonDbContext(DbContextOptions<CrayonDbContext> options) : DbCont
     
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
-     
         configurationBuilder.Properties<Enum>().HaveConversion<string>();
     }
 

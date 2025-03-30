@@ -1,6 +1,7 @@
 using Crayon.Domain.Models;
 using Crayon.Repository;
 using Crayon.Repository.ApiClients;
+using Crayon.Services.Common;
 
 namespace Crayon.Services.Services;
 
@@ -9,7 +10,7 @@ public interface IPurchaseService
     Task ProcessOrder(int accountId, CcpOrder externalOrder);
 }
 
-public class PurchaseService(CrayonDbContext dbContext) : IPurchaseService
+public class PurchaseService(CrayonDbContext dbContext, IDateTimeProvider dateTimeProvider) : IPurchaseService
 {
     public async Task ProcessOrder(int accountId, CcpOrder externalOrder)
     {
@@ -21,7 +22,7 @@ public class PurchaseService(CrayonDbContext dbContext) : IPurchaseService
         var subscriptions = licenceKeysBySoftwareId.Select(item => new Subscription()
             {
                 AccountId = accountId,
-                CreatedAt = DateTimeOffset.UtcNow,
+                CreatedAt = dateTimeProvider.UtcNow,
                 Status = SubscriptionStatus.Active,
                 SoftwareId = item.Key,
                 SoftwareName = item.Key.ToString(),

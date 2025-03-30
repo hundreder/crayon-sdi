@@ -2,6 +2,7 @@ using Crayon.Domain.Errors;
 using Crayon.Domain.Models;
 using Crayon.Repository;
 using Crayon.Repository.ApiClients;
+using Crayon.Services.Common;
 using Crayon.Services.Models;
 using Crayon.Services.Services.Events;
 using LanguageExt;
@@ -19,6 +20,7 @@ public class OrdersService(
     CrayonDbContext dbContext,
     ISoftwareCatalogService softwareCatalogService,
     IMediator mediator,
+    IDateTimeProvider dateTimeProvider,
     ICcpApiClient ccpApiClient) : IOrdersService
 {
     public async Task<Either<CreateOrderError, CompletedOrder>> CreateOrder(NewOrder newOrder, CancellationToken ct)
@@ -38,7 +40,7 @@ public class OrdersService(
         var order = new Order()
         {
             AccountId = newOrder.AccountId,
-            CreatedAt = DateTimeOffset.UtcNow,
+            CreatedAt = dateTimeProvider.UtcNow,
             Status = OrderStatus.Initialized,
             OrderItems = newOrder.Items
                 .Select(item => new OrderItem()
@@ -57,7 +59,7 @@ public class OrdersService(
             .Map(ccpOrder =>
                 {
                     order.Status = OrderStatus.Completed;
-                    order.UpdatedAt = DateTimeOffset.UtcNow;
+                    order.UpdatedAt = dateTimeProvider.UtcNow;
                     order.ExternalOrderId = ccpOrder.Id;
                     
                     return (order, ccpOrder);
@@ -67,7 +69,7 @@ public class OrdersService(
             {
                 // Logger.logwarning saving order as failed for analysis of what happend
                 order.Status = OrderStatus.Failed;
-                order.UpdatedAt = DateTimeOffset.UtcNow;
+                order.UpdatedAt = dateTimeProvider.UtcNow;
                 order.FailureReason = error.ToString();
                 return error;
             });
