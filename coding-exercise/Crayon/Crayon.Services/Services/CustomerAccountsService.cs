@@ -41,24 +41,28 @@ public class CustomerAccountsService(CrayonDbContext dbContext) : ICustomerAccou
 
         if (!SubscriptionBelongsToCustomer(customerId, subscription))
             return CancelSubscriptionError.SubscriptionDoesNotExist;
-        
+
         // Could have been implemented to be idempotent, then this check wouldn't be performed
-        if (subscription.Status == SubscriptionStatus.Cancelled) 
-            return CancelSubscriptionError.SubscriptionAlreadyCanceled; 
+        if (subscription.Status == SubscriptionStatus.Cancelled)
+            return CancelSubscriptionError.SubscriptionAlreadyCanceled;
 
         subscription.Status = SubscriptionStatus.Cancelled;
         subscription.UpdatedAt = DateTimeOffset.UtcNow;
         // if there is any side work to do, do it here. like calling ccp to cancel licences. Then some intermediate state od subscription should be added.
-        
+
         await dbContext.SaveChangesAsync(ct);
 
         return Unit.Default;
-        
+
         bool SubscriptionBelongsToCustomer(int customerId, Subscription subscription) => subscription.Account.CustomerId == customerId;
     }
-    
+
     public async Task<Either<ChangeLicenceCountError, Unit>> ChangeLicenceCount(int customerId, int licenceId, int newLicenceCount, CancellationToken ct)
     {
+        //early break
+        if (newLicenceCount < 1)
+            return ChangeLicenceCountError.LicenceCountMustBeGreaterThanZero;
+        
         var licence = await dbContext.Licences
             .AsSingleQuery()
             .Include(l => l.Subscription)
@@ -70,6 +74,9 @@ public class CustomerAccountsService(CrayonDbContext dbContext) : ICustomerAccou
 
         if (!LicenceBelongsToCustomer(customerId, licence))
             return ChangeLicenceCountError.LicenceDoesNotExist;
+        
+        if (!LicenceBelongsToActiveSubscription(licence))
+            return ChangeLicenceCountError.LicenceSubscriptionNotActive;
 
         if (licence.LicenceCount == newLicenceCount)
             return ChangeLicenceCountError.NewLicenceCountCantBeSameAsExising;
@@ -79,7 +86,7 @@ public class CustomerAccountsService(CrayonDbContext dbContext) : ICustomerAccou
 
         await dbContext.SaveChangesAsync(ct);
 
-        return Unit.Default; 
+        return Unit.Default;
     }
 
     public async Task<Either<ExtendLicenceValidToDateError, Unit>> ExtendLicenceValidToDate(int customerId, int licenceId, DateTimeOffset newValidToDate, CancellationToken ct)
@@ -96,6 +103,9 @@ public class CustomerAccountsService(CrayonDbContext dbContext) : ICustomerAccou
         if (!LicenceBelongsToCustomer(customerId, licence))
             return ExtendLicenceValidToDateError.LicenceDoesNotExist;
 
+        if (!LicenceBelongsToActiveSubscription(licence))
+            return ExtendLicenceValidToDateError.LicenceSubscriptionNotActive;
+
         if (licence.ValidTo >= newValidToDate) // poor mans date validation..
             return ExtendLicenceValidToDateError.DateMustBeInFuture;
 
@@ -106,7 +116,10 @@ public class CustomerAccountsService(CrayonDbContext dbContext) : ICustomerAccou
 
         return Unit.Default;
     }
-    
-    private bool LicenceBelongsToCustomer(int customerId, Licence licence) 
+
+    private bool LicenceBelongsToCustomer(int customerId, Licence licence)
         => licence.Subscription.Account.CustomerId == customerId;
+
+    private bool LicenceBelongsToActiveSubscription(Licence licence)
+        => licence.Subscription.Status == SubscriptionStatus.Active;
 }
