@@ -3,30 +3,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Crayon.Repository;
 
-public class CrayonDbContext : DbContext
+public class CrayonDbContext(DbContextOptions<CrayonDbContext> options) : DbContext(options)
 {
-    public CrayonDbContext(DbContextOptions<CrayonDbContext> options) : base(options)
-    {
-    }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
         
-        modelBuilder.Entity<User>()
-            .ToTable("user", "crayon");
-        modelBuilder.Entity<Customer>()
-            .ToTable("customer", "crayon");
-        modelBuilder.Entity<Account>()
-            .ToTable("account", "crayon");
-        modelBuilder.Entity<Order>()
-            .ToTable("order", "crayon");
-        modelBuilder.Entity<OrderItem>()
-            .ToTable("order_item", "crayon");
-        modelBuilder.Entity<Subscription>()
-            .ToTable("subscription", "crayon");
-        modelBuilder.Entity<Licence>()
-            .ToTable("licence", "crayon");
+        modelBuilder.HasDefaultSchema("crayon");
+        modelBuilder.Entity<User>().ToTable("user");
+        modelBuilder.Entity<Customer>().ToTable("customer");
+        modelBuilder.Entity<Account>().ToTable("account");
+        modelBuilder.Entity<Order>().ToTable("order");
+        modelBuilder.Entity<OrderItem>().ToTable("order_item");
+        modelBuilder.Entity<Subscription>().ToTable("subscription");
+        modelBuilder.Entity<Licence>().ToTable("licence");
         
     }
     

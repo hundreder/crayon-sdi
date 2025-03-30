@@ -11,6 +11,7 @@ public interface ICustomerAccountsService
     Task<List<Subscription>> GetSubscriptions(int customerId, int accountId, CancellationToken ct);
     Task<Either<CancelSubscriptionError, Unit>> CancelSubscription(int customerId, int subscriptionId, CancellationToken ct);
     Task<Either<ChangeLicenceCountError, Unit>> ChangeLicenceCount(int customerId, int licenceId, int newLicenceCount, CancellationToken ct);
+    Task<Either<ExtendLicenceValidToDateError, Unit>> ExtendLicenceValidToDate(int customerId, int licenceId, DateTimeOffset newValidToDate, CancellationToken ct);
 }
 
 public class CustomerAccountsService(CrayonDbContext dbContext) : ICustomerAccountsService
@@ -71,16 +72,41 @@ public class CustomerAccountsService(CrayonDbContext dbContext) : ICustomerAccou
         if (licence.LicenceCount == newLicenceCount)
             return ChangeLicenceCountError.NewLicenceCountCantBeSameAsExising;
 
-        // do stuff required for getting new licences. Maybe new order?
+        // do stuff required for getting new licences. Maybe new order placed?
         licence.LicenceCount = newLicenceCount;
 
         await dbContext.SaveChangesAsync(ct);
 
+        return Unit.Default; 
+    }
+
+    public async Task<Either<ExtendLicenceValidToDateError, Unit>> ExtendLicenceValidToDate(int customerId, int licenceId, DateTimeOffset newValidToDate, CancellationToken ct)
+    {
+        var licence = await dbContext.Licences
+            .AsSingleQuery()
+            .Include(l => l.Subscription)
+            .ThenInclude(s => s.Account)
+            .SingleOrDefaultAsync(l => l.Id == licenceId, cancellationToken: ct);
+
+        if (licence is null)
+            return ExtendLicenceValidToDateError.LicenceDoesNotExist;
+
+        if (!LicenceBelongsToCustomer(customerId, licence))
+            return ExtendLicenceValidToDateError.LicenceDoesNotExist;
+
+        if (licence.ValidTo >= newValidToDate) // poor mans date validation..
+            return ExtendLicenceValidToDateError.DateMustBeInFuture;
+
+        // do stuff required for getting new licences. Maybe new order?
+        licence.ValidTo = newValidToDate;
+
+        await dbContext.SaveChangesAsync(ct);
+
         return Unit.Default;
-        
-        bool LicenceBelongsToCustomer(int customerId, Licence licence) => licence.Subscription.Account.CustomerId == customerId;
     }
     
+    private bool LicenceBelongsToCustomer(int customerId, Licence licence) 
+        => licence.Subscription.Account.CustomerId == customerId;
 }
 
 public enum ChangeLicenceCountError
@@ -93,4 +119,10 @@ public enum CancelSubscriptionError
 {
     SubscriptionDoesNotExist,
     SubscriptionAlreadyCanceled
+}
+
+public enum ExtendLicenceValidToDateError
+{
+    LicenceDoesNotExist,
+    DateMustBeInFuture
 }

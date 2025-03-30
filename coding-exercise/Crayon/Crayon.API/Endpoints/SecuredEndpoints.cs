@@ -91,16 +91,19 @@ public static class SecuredEndpoints
                     subscriptionId,
                     ct))
                 .Match(
-                    _ => Results.Ok(),
+                    _ => Results.NoContent(),
                     error => Results.Problem(new ProblemDetails
                     {
                         Title = error.ToString(),
                         Detail = "Canceling subscription failed. Check your input and try again.",
-                        Status = StatusCodes.Status400BadRequest,
+                        Status = error == CancelSubscriptionError.SubscriptionDoesNotExist
+                            ? StatusCodes.Status404NotFound
+                            : StatusCodes.Status400BadRequest
                     })
                 ))
-            .Produces(StatusCodes.Status200OK);
-
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status400BadRequest);
 
         apiGroup
             .MapPost("licences/{licenceId}/licence-count", async (
@@ -115,17 +118,51 @@ public static class SecuredEndpoints
                     request.LicenceCount,
                     ct))
                 .Match(
-                    _ => Results.Ok(),
+                    _ => Results.NoContent(),
                     error =>
                         Results.Problem(new ProblemDetails()
                             {
                                 Title = error.ToString(),
                                 Detail = "Setting new licence count failed. Check your input and try again.",
-                                Status = StatusCodes.Status400BadRequest,
+                                Status = error == ChangeLicenceCountError.LicenceDoesNotExist
+                                    ? StatusCodes.Status404NotFound
+                                    : StatusCodes.Status400BadRequest,
                             }
                         )
                 ))
-            .Produces(StatusCodes.Status200OK);
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status400BadRequest);
+
+
+        apiGroup
+            .MapPost("licences/{licenceId}/valid-to", async (
+                    [FromRoute] int licenceId,
+                    [FromBody] ExtendLicenceValidToDateRequest request,
+                    [FromServices] ICustomerAccountsService accountsService,
+                    [FromServices] ICurrentUserAccessor loggedInUserAccessor,
+                    CancellationToken ct) =>
+                (await accountsService.ExtendLicenceValidToDate(
+                    loggedInUserAccessor.User().UserId,
+                    licenceId,
+                    request.NewValidToDate,
+                    ct))
+                .Match(
+                    _ => Results.NoContent(),
+                    error =>
+                        Results.Problem(new ProblemDetails()
+                            {
+                                Title = error.ToString(),
+                                Detail = "Extending licence valid to date failed. Check your input and try again.",
+                                Status = error == ExtendLicenceValidToDateError.LicenceDoesNotExist
+                                    ? StatusCodes.Status404NotFound
+                                    : StatusCodes.Status400BadRequest,
+                            }
+                        )
+                ))
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status400BadRequest);
 
 
         return builder;
