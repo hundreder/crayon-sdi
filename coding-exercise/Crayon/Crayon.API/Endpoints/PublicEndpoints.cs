@@ -22,17 +22,23 @@ public static class PublicEndpoints
             .MapPost("login", async (
                 [FromBody] LoginRequest request,
                 [FromServices] IUserService loginService,
+                [FromServices] ILogger<IUserService> logger,
                 CancellationToken ct) =>
             {
                 var token = (await loginService.Login(request.Email, request.Password, ct))
                     .Match(
                         jwt => Results.Ok(new LoginResponse(jwt)),
-                        _ => Results.Problem(new ProblemDetails
+                        error =>
                         {
-                            Title = "InvalidCredentials", // we dont want to return the real reason, but we should log what happened
-                            Detail = "Login failed.",
-                            Status = StatusCodes.Status400BadRequest,
-                        }));
+                            logger.LogWarning($"Login failed. Reason: {error}");
+                            
+                            return Results.Problem(new ProblemDetails
+                            {
+                                Title = "InvalidCredentials", // we dont want to return the real reason, but we should log what happened
+                                Detail = "Login failed.",
+                                Status = StatusCodes.Status400BadRequest,
+                            });
+                        });
 
                 return token;
             })

@@ -12,6 +12,8 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Logging.AddConsole();
+
 var services = builder.Services;
 var appSettings = builder.Configuration.GetSection("AppSettings").Get<AppSettings>()!;
 services.AddSingleton(appSettings);
@@ -20,6 +22,7 @@ services.AddValidatorsFromAssemblyContaining<Program>();
 services.AddFluentValidationAutoValidation();
 
 services.ConfigureHttpJsonOptions(options => { options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
+//services.AddHttpLogging(o => { });
 
 services
     .AddCustomAuthentication(appSettings)
@@ -55,8 +58,8 @@ services.AddHttpClient<ICcpApiClient, CcpApiClient>();
 
 var app = builder.Build();
 app.UseGlobalExceptionHandler(app.Environment.IsDevelopment());
+//app.UseHttpLogging();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();

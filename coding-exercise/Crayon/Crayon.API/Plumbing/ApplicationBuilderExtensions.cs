@@ -13,13 +13,16 @@ public static class ApplicationBuilderExtensions
         {
             errorApp.Run(async context =>
             {
+                var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger("GlobalExceptionHandler");
+
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 context.Response.ContentType = "application/problem+json";
 
                 var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
                 if (contextFeature is not null)
                 {
-                    // Build the ProblemDetails object
+                    logger.LogError(contextFeature.Error, "An unexpected error occurred.");
+                    
                     var problem = new ProblemDetails
                     {
                         Title = "An unexpected error occurred.",
@@ -30,7 +33,7 @@ public static class ApplicationBuilderExtensions
                         Instance = context.Request.Path
                     };
 
-                    // Serialize the ProblemDetails to JSON
+                    
                     var jsonResponse = JsonSerializer.Serialize(problem);
                     await context.Response.WriteAsync(jsonResponse);
                 }
