@@ -1,4 +1,3 @@
-using Crayon.API.Configuration;
 using Crayon.Domain.Models;
 using Crayon.Repository;
 using LanguageExt;
@@ -14,7 +13,6 @@ public interface IUserService
 }
 
 public class UserService(
-    AppSettings settings,
     ICurrentUserAccessor userAccessor,
     IAuthenticationService authenticationService,
     CrayonDbContext dbContext) : IUserService
@@ -36,8 +34,8 @@ public class UserService(
     public async Task<User> GetLoggedInUser(CancellationToken ct) =>
         await dbContext.Users.SingleAsync(u => u.Id == userAccessor.User().UserId, cancellationToken: ct);
 
-    private bool ValidateCredentials(string email, string password)
-        => password == "123123";
+    private bool ValidateCredentials(string email, string password) 
+        => password == "123123"; // poor mans validation
 }
 
 public enum LoginError

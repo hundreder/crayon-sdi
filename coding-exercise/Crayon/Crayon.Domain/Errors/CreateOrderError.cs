@@ -1,4 +1,4 @@
-namespace Crayon.API.Models;
+namespace Crayon.Domain.Errors;
 
 public enum CreateOrderError
 {

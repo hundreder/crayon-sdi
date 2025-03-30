@@ -1,7 +1,7 @@
-using Crayon.API.ApiClients;
-using Crayon.API.Models;
+using Crayon.Domain.Models;
+using Crayon.Repository.ApiClients;
 
-namespace Crayon.API.Repository;
+namespace Crayon.Repository;
 
 public interface ISoftwareCatalogRepository
 {

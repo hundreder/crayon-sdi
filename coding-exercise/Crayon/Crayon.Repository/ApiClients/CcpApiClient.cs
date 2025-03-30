@@ -1,8 +1,8 @@
-using Crayon.API.Models;
+using Crayon.Domain.Errors;
 using Crayon.Domain.Models;
 using LanguageExt;
 
-namespace Crayon.API.ApiClients;
+namespace Crayon.Repository.ApiClients;
 
 public interface ICcpApiClient
 {

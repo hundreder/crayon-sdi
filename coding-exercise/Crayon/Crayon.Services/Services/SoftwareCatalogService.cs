@@ -1,7 +1,7 @@
-using Crayon.API.Models;
-using Crayon.API.Repository;
+using Crayon.Domain.Models;
+using Crayon.Repository;
 
-namespace Crayon.API.Services;
+namespace Crayon.Services.Services;
 
 public interface ISoftwareCatalogService
 {

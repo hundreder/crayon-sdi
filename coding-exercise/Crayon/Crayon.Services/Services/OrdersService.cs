@@ -1,12 +1,14 @@
-using Crayon.API.ApiClients;
-using Crayon.API.Models;
-using Crayon.API.Services.Events;
+using Crayon.Domain.Errors;
 using Crayon.Domain.Models;
 using Crayon.Repository;
+using Crayon.Repository.ApiClients;
+using Crayon.Services.Models;
+using Crayon.Services.Services.Events;
 using LanguageExt;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-namespace Crayon.API.Services;
+
+namespace Crayon.Services.Services;
 
 public interface IOrdersService
 {
@@ -100,5 +102,3 @@ public class OrdersService(
     
     
 }
-
-public record CompletedOrder(int OrderId, string CcpOrderId);

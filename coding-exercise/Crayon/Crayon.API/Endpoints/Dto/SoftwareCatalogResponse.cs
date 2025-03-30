@@ -1,4 +1,3 @@
-using Crayon.API.Models;
 using LanguageExt.ClassInstances;
 
 namespace Crayon.API.Endpoints.Dto;

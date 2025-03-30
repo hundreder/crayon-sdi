@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace Crayon.API.Services.Events;
+namespace Crayon.Services.Services.Events;
 
 public class CompletedOrderHandler(IPurchaseService purchaseService): INotificationHandler<CompletedOrderEvent>
 {

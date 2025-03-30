@@ -1,9 +1,11 @@
+using Crayon.Domain.Errors;
 using Crayon.Domain.Models;
 using Crayon.Repository;
 using LanguageExt;
 using Microsoft.EntityFrameworkCore;
+using Unit = LanguageExt.Unit;
 
-namespace Crayon.API.Services;
+namespace Crayon.Services.Services;
 
 public interface ICustomerAccountsService
 {
@@ -107,22 +109,4 @@ public class CustomerAccountsService(CrayonDbContext dbContext) : ICustomerAccou
     
     private bool LicenceBelongsToCustomer(int customerId, Licence licence) 
         => licence.Subscription.Account.CustomerId == customerId;
-}
-
-public enum ChangeLicenceCountError
-{
-    LicenceDoesNotExist,
-    NewLicenceCountCantBeSameAsExising
-}
-
-public enum CancelSubscriptionError
-{
-    SubscriptionDoesNotExist,
-    SubscriptionAlreadyCanceled
-}
-
-public enum ExtendLicenceValidToDateError
-{
-    LicenceDoesNotExist,
-    DateMustBeInFuture
 }

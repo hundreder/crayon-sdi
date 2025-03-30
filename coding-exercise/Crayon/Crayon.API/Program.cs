@@ -1,11 +1,12 @@
 using System.Text.Json.Serialization;
-using Crayon.API.ApiClients;
 using Crayon.API.Configuration;
 using Crayon.API.Endpoints;
 using Crayon.API.Services;
 using Crayon.API.Plumbing;
-using Crayon.API.Repository;
 using Crayon.Repository;
+using Crayon.Repository.ApiClients;
+using Crayon.Services.Services;
+using Crayon.Services.Services.Events;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,7 +31,7 @@ services
     .AddSingleton<IAuthenticationService, AuthenticationService>()
     .AddMediatR(cfg =>
     {
-        cfg.RegisterServicesFromAssemblyContaining<Program>();
+        cfg.RegisterServicesFromAssemblyContaining<CompletedOrderHandler>();
         cfg.Lifetime = ServiceLifetime.Scoped;
     });
 

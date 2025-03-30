@@ -1,7 +1,8 @@
 using Crayon.API.Endpoints.Dto;
-using Crayon.API.Models;
 using Crayon.API.Services;
 using Crayon.Domain.Models;
+using Crayon.Services.Models;
+using Crayon.Services.Services;
 
 namespace Crayon.API.Endpoints;
 

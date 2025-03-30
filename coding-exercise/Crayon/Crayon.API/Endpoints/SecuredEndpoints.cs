@@ -1,7 +1,8 @@
 using Crayon.API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Crayon.API.Endpoints.Dto;
-using Crayon.API.Models;
+using Crayon.Domain.Errors;
+using Crayon.Services.Services;
 
 namespace Crayon.API.Endpoints;
 

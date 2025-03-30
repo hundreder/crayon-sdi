@@ -19,7 +19,7 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="9.0.3" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.3" />
         <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="8.0.0" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="8.0.0" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="8.0.0" />
@@ -33,6 +33,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Crayon.Repository\Crayon.Repository.csproj" />
+      <ProjectReference Include="..\Crayon.Services\Crayon.Services.csproj" />
     </ItemGroup>
 
 </Project>

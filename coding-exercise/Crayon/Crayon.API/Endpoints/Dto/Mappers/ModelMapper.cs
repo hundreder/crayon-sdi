@@ -1,5 +1,5 @@
 using Crayon.API.Endpoints.Dto;
-using Crayon.API.Models;
+using Crayon.Services.Models;
 
 namespace Crayon.API.Endpoints;
 

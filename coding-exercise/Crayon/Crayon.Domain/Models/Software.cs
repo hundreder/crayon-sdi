@@ -1,4 +1,4 @@
-namespace Crayon.API.Models;
+namespace Crayon.Domain.Models;
 
 public record Software(int Id, string Name, string Version, string Vendor, decimal Price);
 

@@ -1,4 +1,4 @@
-namespace Crayon.API.ApiClients.Dto;
+namespace Crayon.Repository.ApiClients.Dto;
 
 public record NewCcpOrderRequest(string ExternalOrderId, string AccountId, List<NewCcpOrderItemRequest> Items);
 

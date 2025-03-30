@@ -1,8 +1,8 @@
-using Crayon.API.ApiClients;
 using Crayon.Domain.Models;
 using Crayon.Repository;
+using Crayon.Repository.ApiClients;
 
-namespace Crayon.API.Services;
+namespace Crayon.Services.Services;
 
 public interface IPurchaseService
 {
