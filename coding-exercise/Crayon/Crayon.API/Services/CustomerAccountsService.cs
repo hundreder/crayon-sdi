@@ -28,17 +28,22 @@ public class CustomerAccountsService(CrayonDbContext dbContext) : ICustomerAccou
     
     public async Task<Either<ChangeLicenceCountError, Unit>> ChangeLicenceCount(int customerId, int licenceId, int newLicenceCount, CancellationToken ct)
     {
-        if (!await LicenceBelongsToCustomer(licenceId, licenceId, ct))
+        var licence = await dbContext.Licences
+            .AsSingleQuery()
+            .Include(l => l.Subscription)
+            .ThenInclude(s=>s.Account)
+            .SingleOrDefaultAsync(l => l.Id == licenceId, cancellationToken: ct);
+        
+        if (licence is null)
+            return ChangeLicenceCountError.LicenceDoesNotExist;        
+        
+        if (!await LicenceBelongsToCustomer(customerId, licence))
             return ChangeLicenceCountError.LicenceDoesNotExist;
         
-        var licence = await dbContext.Licences.SingleOrDefaultAsync(l => l.Id == licenceId, cancellationToken: ct);
-        if (licence is null)
-            return ChangeLicenceCountError.LicenceDoesNotExist;
-
         if (licence.LicenceCount == newLicenceCount)
             return ChangeLicenceCountError.NewLicenceCountCantBeSameAsExising;
         
-        // do stuff required for getting new licence
+        // do stuff required for getting new licences. Maybe new order?
         licence.LicenceCount = newLicenceCount;
 
         await dbContext.SaveChangesAsync(ct);
@@ -46,15 +51,7 @@ public class CustomerAccountsService(CrayonDbContext dbContext) : ICustomerAccou
         return Unit.Default;
     }
 
-    private async Task<bool> LicenceBelongsToCustomer(int customerId, int licenceId, CancellationToken ct)
-    {
-        var licence = await dbContext.Licences
-            .SingleOrDefaultAsync(l => l.Id == licenceId && l.Subscription.Account.CustomerId == customerId, cancellationToken: ct);
-
-        return licence != null;
-    }
-
-        
+    private async Task<bool> LicenceBelongsToCustomer(int customerId, Licence licence) => licence.Subscription.Account.CustomerId == customerId;
 }
 
 public enum ChangeLicenceCountError

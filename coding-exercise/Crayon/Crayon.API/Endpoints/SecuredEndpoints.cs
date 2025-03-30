@@ -103,6 +103,12 @@ public static class SecuredEndpoints
                                 Detail = "Setting new licence count failed.",
                                 Status = StatusCodes.Status404NotFound,
                             }),
+                            ChangeLicenceCountError.NewLicenceCountCantBeSameAsExising =>Results.Problem(new ProblemDetails()
+                            {
+                                Title = error.ToString(),
+                                Detail = "Setting new licence count failed. Check your input and try again.",
+                                Status = StatusCodes.Status400BadRequest,
+                            }),
                             _ => throw new ArgumentOutOfRangeException(nameof(error), error, null)
                         });
             })
