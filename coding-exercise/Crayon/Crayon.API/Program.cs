@@ -22,6 +22,7 @@ services
     .AddScoped<ISoftwareCatalogService, SoftwareCatalogService>()
     .AddScoped<IOrdersService, OrdersService>()
     .AddScoped<IUserService, UserService>()
+    .AddScoped<IPurchaseService, PurchaseService>()
     .AddSingleton<IAuthenticationService, AuthenticationService>();
 
 services.AddHttpClient<ICcpApiClient, CcpApiClient>();

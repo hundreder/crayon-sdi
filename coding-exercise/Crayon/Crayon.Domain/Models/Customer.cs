@@ -32,6 +32,7 @@ public class Account
 
     public virtual Customer Customer { get; set; } = null!;
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+    public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
 }
 
 public class Order
@@ -54,17 +55,19 @@ public class OrderItem
     public required int OrderId { get; set; }      
     public required int SoftwareId { get; set; }   
     public required int LicenceCount { get; set; } 
-    public required DateTimeOffset? LicenceValidTo { get; set; }
+    public required DateTimeOffset LicenceValidTo { get; set; }
 
     public virtual Order Order { get; set; } = null!;
 }
 
 public class Subscription
 {
-    public int Id { get; set; }            
+    public int Id { get; set; }
+    public required int SoftwareId { get; set; }
     public required string SoftwareName { get; set; } 
     public required SubscriptionStatus Status { get; set; }       
     public required DateTimeOffset CreatedAt { get; set; }
+    public required int AccountId { get; set; }   
 
     public virtual ICollection<Licence> Licences { get; set; } = new List<Licence>();
 }
@@ -72,7 +75,7 @@ public class Subscription
 public class Licence
 {
     public int Id { get; set; }             
-    public required int SubscriptionId { get; set; } 
+    public int SubscriptionId { get; set; } 
     public required DateTimeOffset ValidTo { get; set; }   
     public required string LicenceKey { get; set; }
 

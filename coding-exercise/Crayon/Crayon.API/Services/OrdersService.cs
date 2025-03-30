@@ -14,6 +14,7 @@ public interface IOrdersService
 public class OrdersService(
     CrayonDbContext dbContext,
     ISoftwareCatalogService softwareCatalogService,
+    IPurchaseService purchaseService,
     ICcpApiClient ccpApiClient) : IOrdersService
 {
     public async Task<Either<CreateOrderError, Order>> CreateOrder(NewOrder newOrder, CancellationToken ct)
@@ -51,11 +52,12 @@ public class OrdersService(
         await dbContext.SaveChangesAsync(ct);
 
         var order = (await ccpApiClient.SendOrder(initializedOrder))
-            .Map(externalOrderId =>
+            .Map(ccpOrder =>
                 {
                     initializedOrder.Status = OrderStatus.Completed;
                     initializedOrder.UpdatedAt = DateTimeOffset.UtcNow;
-                    initializedOrder.ExternalOrderId = externalOrderId;
+                    initializedOrder.ExternalOrderId = ccpOrder.Id;
+                    
                     return initializedOrder;
                 }
             )

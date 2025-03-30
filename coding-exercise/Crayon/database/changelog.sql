@@ -61,9 +61,14 @@ create table  crayon.order_item (
 --changeset srdjan.majstorovic:7
 create table  crayon.Subscription(
     id int generated always as identity primary key not null,
+    account_id int not null,
+    software_id int not null,
     software_name varchar(50) not null,
     status varchar(50) not null,
-    created_at timestamptz not null
+    created_at timestamptz not null,
+
+    CONSTRAINT fk_account
+        FOREIGN KEY (account_id) REFERENCES crayon.account (id)
 )
 
 --changeset srdjan.majstorovic:8
@@ -71,7 +76,10 @@ create table  crayon.Licence(
     id int generated always as identity primary key not null,
     subscription_id int not null,
     valid_to timestamptz not null,
-    licence_key varchar(50) not null
+    licence_key varchar(50) not null,
+
+    CONSTRAINT fk_subscription
+        FOREIGN KEY (subscription_id) REFERENCES crayon.subscription (id)
 )
 
 --changeset srdjan.majstorovic:9

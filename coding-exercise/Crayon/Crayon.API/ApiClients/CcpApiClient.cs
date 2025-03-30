@@ -7,7 +7,7 @@ namespace Crayon.API.ApiClients;
 public interface ICcpApiClient
 {
     public IEnumerable<Software> GetEntireCatalog();
-    public Task<Either<CreateOrderError, string>> SendOrder(Order order);
+    public Task<Either<CreateOrderError, CcpOrder>> SendOrder(Order order);
 }
 
 public class CcpApiClient(HttpClient httpClient) : ICcpApiClient
@@ -40,11 +40,20 @@ public class CcpApiClient(HttpClient httpClient) : ICcpApiClient
         return softwareServices;
     }
 
-    public async Task<Either<CreateOrderError, string>> SendOrder(Order order)
+    public async Task<Either<CreateOrderError, CcpOrder>> SendOrder(Order order)
     {
-        if(order.OrderItems.Count > 2)
+        if (order.OrderItems.Count > 2)
             return CreateOrderError.SubmittingOrderToExternalProviderFailed;
-        
-        return $"CCP-{Guid.NewGuid()}";
+
+        var ccpOrder = new CcpOrder(
+            $"CcpId-{Guid.NewGuid()}",
+            order.OrderItems.Select(oi => new SoftwareLicence(oi.SoftwareId, $"key-{Guid.NewGuid()}", oi.LicenceValidTo))
+        );
+
+        return ccpOrder;
     }
 }
+
+public record CcpOrder(string Id, IEnumerable<SoftwareLicence> Licences);
+
+public record SoftwareLicence(int SoftwareId, string LicenceKey, DateTimeOffset LicenceValidTo);

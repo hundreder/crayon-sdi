@@ -19,6 +19,7 @@ Swaggeer http://localhost:5072/swagger/index.html
  - Containter management tool like Rancher Desktop 
  
     https://docs.rancherdesktop.io/getting-started/installation
+    
  - Liquibase
 
     https://docs.liquibase.com/start/install/liquibase-macos.html
@@ -54,15 +55,16 @@ Emails:
 - baruser@test.com
 - baruser@test.com
 
-Password is: ```1```
+Password is: ```123123```
 
 
 
 # Troubleshooting
-If liwuibase partialy suceedes, reset db to initial state
+If liquibase partialy suceedes or you want to reset db to initial state run this SQL script
 ```SQL
 DELETE FROM public.databasechangelog	
 WHERE 1=1;
 
 Drop schema crayon cascade;
 ```
+Than run: ```liquibase update``` in terminal
