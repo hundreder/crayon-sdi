@@ -32,10 +32,28 @@ Code is located in /coding-exercise folder.
 
     https://docs.liquibase.com/start/install/liquibase-macos.html
 
+## Starting the application - One click start
+If all prerequisites are in place simply running this script will
 
-## PostgresSQL database setup
+- run PostgresSQL image in docker
+- create database and seed it
+- build application image
+- running applicatoin image
+- opening swagger page in browser
 
-### Run instance of PostgresSql server
+```
+bash run.bash
+```
+
+To stop the app, and remove all docker images run:
+```
+bash stop.bash
+```
+
+## Starting the application - step by step
+### PostgresSQL database setup
+
+#### Run instance of PostgresSql server
 Run the following docker command to spin up new instance of postgres db
 
 ```docker
@@ -48,6 +66,7 @@ docker run --name crayon-postgres \
 ```
 
 ### 1. To create database schema using liquibase
+from coding-exercise/Crayon/database/ folder run 
 ```
 liquibase update
 ```
@@ -87,7 +106,7 @@ docker run \
    -d \
    --add-host=host.docker.internal:host-gateway \
    -p 8080:8080 \
-   -e ASPNETCORE_ENVIRONMENT="Development"  \
+   -e ASPNETCORE_ENVIRONMENT="Development" \
    -e AppSettings__ConnectionString="Server=host.docker.internal:6432;Database=CrayonDb;User ID=crayon;Password=somepassword"  \
    --name crayon-api-container \
    crayon-api:latest
@@ -113,6 +132,7 @@ Returned jwt should be added as Authorization header when calling Secured endpoi
 
 
 
+
 # Troubleshooting
 If liquibase partialy suceedes or you want to reset db to initial state run this SQL script
 ```SQL
@@ -121,9 +141,4 @@ WHERE 1=1;
 
 Drop schema crayon cascade;
 ```
-Than run: ```liquibase update``` in terminal
-
-
-Usefull liquibase commands
--   ```liquibase updateTestingRollback``` - run all changesets and rolls them back
--   ```liquibase validate``` - validates changesets
+Than run: ```liquibase update``` in terminal again.
