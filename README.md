@@ -2,24 +2,28 @@
 System design interview project for Crayon Senior .Net developer role
 
 # Requirements
-Requirements are located in /requirements folder
+Requirements are located in:
 
-`Crayon System Design Interview Question 1.pdf`
+`/requirements/Crayon System Design Interview Question 1.pdf`
 
-`Crayon Technical Exercise Interview Question 1.pdf`
+`/requirements/Crayon Technical Exercise Interview Question 1.pdf`
 
 # Crayon system design interview Question 1 - Solution
-Solution of this task can be found in system-design-task folder. 
+Solution of this task can be found in folder
 
-Folder has 3 files with same content but of different type. For most efficient view of the solution go to https://excalidraw.com/ ,click Open in the left side burger menu and choose `Crayon - system design task.excalidraw` file. 
+`/system-design-task`
+
+Folder has 3 files with same content but of different type (png, svg and excalidraw). 
+
+For most efficient view of the solution go to https://excalidraw.com/  ,click Open in the left side burger menu and browse to `Crayon - system design task.excalidraw` file.
 
 # Crayon Technical Exercise Interview Question 1 - Solution
-Code is located in /coding-exercise folder. 
+Code is located in /coding-exercise folder.
 
 
 ## Prerequisites
  - .net 9 sdk installed
- - IDE would help browsing the code / debugging
+ - IDE would help browsing the code / debugging and DB querying
  - Docker (Containter management tool like Rancher Desktop would help too)
  
     https://docs.rancherdesktop.io/getting-started/installation
