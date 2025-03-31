@@ -71,7 +71,7 @@ from coding-exercise/Crayon/database/ folder run
 liquibase update
 ```
 
-### 2. To create database schema using db script
+### 2. To create database schema using db script (NO liquibase)
 
 Open DB Management tool (i.e. PgAdmin) and run script located in
 ```
