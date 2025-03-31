@@ -102,7 +102,6 @@ docker build -t crayon-api .
 Start the image
 ```docker
 docker run \
-   -d \
    --add-host=host.docker.internal:host-gateway \
    -p 8080:8080 \
    -e ASPNETCORE_ENVIRONMENT="Development" \
