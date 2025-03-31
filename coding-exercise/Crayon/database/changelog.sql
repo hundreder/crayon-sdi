@@ -9,7 +9,7 @@ create table crayon.user (
     id int generated always as identity primary key not null,
     email varchar(50) not null,
     name varchar(50) not null
-)
+);
 
 --changeset srdjan.majstorovic:3
 create table  crayon.customer (
@@ -19,7 +19,7 @@ create table  crayon.customer (
     CONSTRAINT FK_user 
     FOREIGN KEY (id) 
     REFERENCES crayon.user (id)
-)
+);
 
 --changeset srdjan.majstorovic:4
 create table  crayon.account (
@@ -29,7 +29,7 @@ create table  crayon.account (
 
     CONSTRAINT FK_customer
       FOREIGN KEY (customer_id) REFERENCES crayon.customer (id)
-)
+);
 
 --changeset srdjan.majstorovic:5
 create table  crayon.order (
@@ -44,7 +44,7 @@ create table  crayon.order (
     CONSTRAINT FK_account
         FOREIGN KEY (account_id) REFERENCES crayon.account (id)
 
-)
+);
 
 --changeset srdjan.majstorovic:6
 create table  crayon.order_item (
@@ -56,7 +56,7 @@ create table  crayon.order_item (
     
     CONSTRAINT FK_Order
         FOREIGN KEY (order_id) REFERENCES crayon.Order (id)
-)
+);
 
 --changeset srdjan.majstorovic:7
 create table  crayon.Subscription(
@@ -70,7 +70,7 @@ create table  crayon.Subscription(
 
     CONSTRAINT fk_account
         FOREIGN KEY (account_id) REFERENCES crayon.account (id)
-)
+);
 
 --changeset srdjan.majstorovic:8
 create table  crayon.Licence(
@@ -82,7 +82,7 @@ create table  crayon.Licence(
 
     CONSTRAINT fk_subscription
         FOREIGN KEY (subscription_id) REFERENCES crayon.subscription (id)
-)
+);
 
 --changeset srdjan.majstorovic:9
 INSERT INTO crayon.user (Email, name) 
