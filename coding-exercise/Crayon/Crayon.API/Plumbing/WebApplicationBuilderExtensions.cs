@@ -48,8 +48,11 @@ public static class WebApplicationBuilderExtensions
                 tracerProviderBuilder
                     .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("CrayonServices"))
                     .AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation()
-                    .AddConsoleExporter();
+                    .AddHttpClientInstrumentation();
+                    // .AddOtlpExporter(otlpOptions =>
+                    // {
+                    //     otlpOptions.Endpoint = new Uri("http://localhost:4318/v1/traces");
+                    // });
             });
         return services;
     }
