@@ -43,7 +43,7 @@ docker run --name crayon-postgres \
     -e POSTGRES_USER=crayon \
     -e POSTGRES_PASSWORD=somepassword \
     -e POSTGRES_DB=CrayonDb \
-    -p 5432:5432 \
+    -p 6432:5432 \
     -d postgres:latest
 ```
 
@@ -83,7 +83,14 @@ docker build -t crayon-api .
 
 Start the image
 ```docker
-docker run -d -p 8080:8080 -e "ASPNETCORE_ENVIRONMENT=Development"  --name crayon-api-container crayon-api:latest
+docker run \
+   -d \
+   --add-host=host.docker.internal:host-gateway \
+   -p 8080:8080 \
+   -e ASPNETCORE_ENVIRONMENT="Development"  \
+   -e AppSettings__ConnectionString="Server=host.docker.internal:6432;Database=CrayonDb;User ID=crayon;Password=somepassword"  \
+   --name crayon-api-container \
+   crayon-api:latest
 ```
 
 
