@@ -92,7 +92,6 @@ dotnet run --project  coding-exercise/Crayon/Crayon.API
 Open Crayon.slm using .net IDE and hit Run/Debug (F5)
 
 ### Using docker 
-Not working atm. Conection from app container to db container has to be fixed.
 
 Build an image. Go to coding-exercise/Crayon and run 
 ```docker
