@@ -149,7 +149,7 @@ public class OrdersServiceTests
                 client.SendOrder(It.IsAny<Order>()))
             .ReturnsAsync(new CcpOrder(ccpOrderId, new List<SoftwareLicence>()
             {
-                new(100, Guid.NewGuid().ToString(), 1, DateTime.UtcNow.AddYears(1))
+                new(new Software(100, "Wrd", "1.0", "MS", 100m), Guid.NewGuid().ToString(), 1, DateTime.UtcNow.AddYears(1))
             }));
        
 

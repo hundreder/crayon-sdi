@@ -15,7 +15,7 @@ public class PurchaseService(CrayonDbContext dbContext, IDateTimeProvider dateTi
     public async Task ProcessOrder(int accountId, CcpOrder externalOrder)
     {
         var licenceKeysBySoftwareId = externalOrder.Licences
-            .GroupBy(licence => licence.SoftwareId)
+            .GroupBy(licence => licence.Software)
             .ToDictionary(group => group.Key, group => group.Select(licence => licence));
 
 
@@ -24,8 +24,8 @@ public class PurchaseService(CrayonDbContext dbContext, IDateTimeProvider dateTi
                 AccountId = accountId,
                 CreatedAt = dateTimeProvider.UtcNow,
                 Status = SubscriptionStatus.Active,
-                SoftwareId = item.Key,
-                SoftwareName = item.Key.ToString(),
+                SoftwareId = item.Key.Id,
+                SoftwareName = item.Key.Name,
                 Licences = item.Value.Select(licence => new Licence()
                     {
                         LicenceKey = licence.LicenceKey,
