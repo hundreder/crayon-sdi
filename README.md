@@ -69,8 +69,11 @@ From the root of repository run:
 dotnet run --project  coding-exercise/Crayon/Crayon.API
 ```
 
+### Using IDE
+Open Crayon.slm using .net IDE and hit Run/Debug (F5)
 
-### Using docker
+### Using docker 
+Not working atm. Conection from app container to db container has to be fixed.
 
 Build an image. Go to coding-exercise/Crayon and run 
 ```docker
@@ -86,6 +89,8 @@ docker run -d -p 8080:8080 -e "ASPNETCORE_ENVIRONMENT=Development"  --name crayo
 
 # Using the API
 To browse the api documentation go to http://localhost:8080/swagger/index.html
+Public endpoints dont require jwt to call. Secure ones require JWT.
+
 
 # Login
 Several users with their coresponding customer and accounts are seeded in database.
@@ -96,6 +101,8 @@ baruser@test.com
 baruser@test.com
 ```
 Password is: ```123123```
+
+Returned jwt should be added as Authorization header when calling Secured endpoints
 
 
 
