@@ -33,3 +33,12 @@ internal sealed class BearerSecuritySchemeTransformer(IAuthenticationSchemeProvi
         }
     }
 }
+
+internal sealed class DocumentsServerTransformer() : IOpenApiDocumentTransformer
+{
+    public async Task TransformAsync(OpenApiDocument document, OpenApiDocumentTransformerContext context, CancellationToken cancellationToken)
+    {
+        document.Servers.Clear();
+        document.Servers.Add(new OpenApiServer{Url = "http://localhost:8080"}); //quick and dirty to make open api works from docker
+    }
+}

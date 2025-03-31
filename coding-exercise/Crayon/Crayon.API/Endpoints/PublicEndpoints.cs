@@ -10,7 +10,7 @@ public static class PublicEndpoints
 {
     public static IEndpointRouteBuilder MapPublicEndpoints(this IEndpointRouteBuilder builder)
     {
-        var publicApiGroup = builder.MapGroup("api/vi")
+        var publicApiGroup = builder.MapGroup("api/v1")
             .WithTags("PublicApi");
 
         publicApiGroup

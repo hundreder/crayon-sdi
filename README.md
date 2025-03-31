@@ -8,18 +8,20 @@ Requirements are located in /requirements folder
 
 `Crayon Technical Exercise Interview Question 1.pdf`
 
-# Crayon system design interview Question 1
+# Crayon system design interview Question 1 - Solution
 Solution of this task can be found in system-design-task folder. Filder has 3 files with same content but of different type. For most efficient viewof solution go to https://excalidraw.com/ ,click Open in the left side burger menu and choose `Crayon - system design task.excalidraw` file.
 
-# Crayon Technical Exercise Interview Question 1
-Swaggeer http://localhost:5072/swagger/index.html
+# Crayon Technical Exercise Interview Question 1 - Solution
+Code is located in /coding-exercise folder.
 
 
 # Prerequisites
- - Containter management tool like Rancher Desktop 
+ - .net 9 sdk installed
+ - IDE would help browsing the code / debugging
+ - Docker (Containter management tool like Rancher Desktop would help too)
  
     https://docs.rancherdesktop.io/getting-started/installation
-    
+
  - Liquibase
 
     https://docs.liquibase.com/start/install/liquibase-macos.html
@@ -38,14 +40,31 @@ docker run --name crayon-postgres \
 ```
 
 To create database schema run
--  ```liquibase update```
+```
+liquibase update
+```
 
-Usefull liquibase commands
--   ```liquibase updateTestingRollback``` - run all changesets and rolls them back
--   ```liquibase validate``` - validates changesets
+# Starting the application
+
+## Using dotnet run
+From the root of repository run:
+```
+dotnet run --project  coding-exercise/Crayon/Crayon.API
+```
 
 
-DB is seeded with several users, customers and accounts.
+## Using docker
+
+Build an image. Go to coding-exercise/Crayon and run 
+```
+docker build -t crayon-api .
+```
+
+
+Start the image
+```
+docker run -d -p 8080:8080 -e "ASPNETCORE_ENVIRONMENT=Development"  --name crayon-api-container crayon-api:latest
+```
 
 
 # Login
@@ -68,3 +87,8 @@ WHERE 1=1;
 Drop schema crayon cascade;
 ```
 Than run: ```liquibase update``` in terminal
+
+
+Usefull liquibase commands
+-   ```liquibase updateTestingRollback``` - run all changesets and rolls them back
+-   ```liquibase validate``` - validates changesets
