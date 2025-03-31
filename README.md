@@ -28,7 +28,7 @@ Code is located in /coding-exercise folder.
  
     https://docs.rancherdesktop.io/getting-started/installation
 
- - Liquibase
+ - Liquibase (optional)
 
     https://docs.liquibase.com/start/install/liquibase-macos.html
 
