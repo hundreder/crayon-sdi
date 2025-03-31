@@ -34,6 +34,8 @@ Code is located in /coding-exercise folder.
 
 
 ## PostgresSQL database setup
+
+### Run instance of PostgresSql server
 Run the following docker command to spin up new instance of postgres db
 
 ```docker
@@ -45,10 +47,19 @@ docker run --name crayon-postgres \
     -d postgres:latest
 ```
 
-To create database schema run
+### 1. To create database schema using liquibase
 ```
 liquibase update
 ```
+
+### 2. To create database schema using db script
+
+Open DB Management tool (i.e. PgAdmin) and run script located in
+```
+coding-exercise/database/changelog.sql
+```
+
+After that db is ready. Shcema is created, and basic data is seeded.
 
 ## Starting the application
 
@@ -62,13 +73,13 @@ dotnet run --project  coding-exercise/Crayon/Crayon.API
 ### Using docker
 
 Build an image. Go to coding-exercise/Crayon and run 
-```
+```docker
 docker build -t crayon-api .
 ```
 
 
 Start the image
-```
+```docker
 docker run -d -p 8080:8080 -e "ASPNETCORE_ENVIRONMENT=Development"  --name crayon-api-container crayon-api:latest
 ```
 
